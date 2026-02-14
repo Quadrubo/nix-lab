@@ -89,7 +89,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/borgmatic-collective/borgmatic:1.9"; # renovate: docker
+      default = "ghcr.io/borgmatic-collective/borgmatic:2.1"; # renovate: docker
     };
 
     hostname = mkOption {
