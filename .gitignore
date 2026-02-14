@@ -1,0 +1,9 @@
+# NixOS
+.direnv
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+secrets.auto.tfvars
+backend.conf
