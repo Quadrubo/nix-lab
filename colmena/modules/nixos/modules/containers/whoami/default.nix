@@ -23,7 +23,7 @@ in
 
       image = mkOption {
         type = types.str;
-        default = "traefik/whoami";
+        default = "traefik/whoami"; # renovate: docker
         description = "Docker image to run.";
       };
     };

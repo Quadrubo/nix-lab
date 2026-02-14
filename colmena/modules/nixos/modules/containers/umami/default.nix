@@ -21,7 +21,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/umami-software/umami:postgresql-v2";
+      default = "ghcr.io/umami-software/umami:postgresql-v2"; # renovate: docker
     };
 
     domain = mkOption {
@@ -31,7 +31,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:15-alpine";
+      default = "postgres:15-alpine"; # renovate: docker
     };
   };
 

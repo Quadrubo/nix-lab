@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/quadrubo/julweb:v0.1.1";
+      default = "ghcr.io/quadrubo/julweb:v0.1.1"; # renovate: docker
     };
 
     domain = mkOption {
@@ -30,7 +30,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "mariadb:10.11";
+      default = "mariadb:10.11"; # renovate: docker
     };
   };
 

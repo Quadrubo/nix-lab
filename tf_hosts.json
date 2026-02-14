@@ -1,1 +1,10 @@
-{}
+{
+  "server_ips": {
+    "sensitive": false,
+    "type": [
+      "object",
+      {}
+    ],
+    "value": {}
+  }
+}
