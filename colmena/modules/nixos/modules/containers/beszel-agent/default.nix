@@ -21,7 +21,7 @@ in
 
       image = mkOption {
         type = types.str;
-        default = "henrygd/beszel-agent:0.18.2";
+        default = "henrygd/beszel-agent:0.18.2"; # renovate: docker
         description = "The docker image to run.";
       };
 
