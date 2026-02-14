@@ -2,7 +2,7 @@ terraform {
   required_providers {
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "~> 1.49"
+      version = "~> 1.60"
     }
   }
 
@@ -70,5 +70,35 @@ output "server_ips" {
   value = {
     # map: "publy" => "46.x.x.x"
     for name, server in hcloud_server.machines : name => server.ipv4_address
+  }
+}
+
+# --- Storage Boxes ---
+resource "hcloud_storage_box" "boxes" {
+  for_each = var.storage_boxes
+
+  name             = each.key
+  location         = each.value.location
+  storage_box_type = each.value.storage_box_type
+  password         = var.storage_box_secrets[each.key]
+
+  access_settings = {
+    reachable_externally = true
+    ssh_enabled          = true
+  }
+}
+
+resource "hcloud_storage_box_subaccount" "subaccounts" {
+  for_each = var.storage_box_subaccounts
+
+  storage_box_id = hcloud_storage_box.boxes[each.value.storage_box_id].id
+  description    = each.value.description
+
+  home_directory = each.value.home_directory
+  password       = var.storage_box_subaccount_secrets[each.value.storage_box_id][each.key]
+
+  access_settings = {
+    reachable_externally = true
+    ssh_enabled          = true
   }
 }
