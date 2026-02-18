@@ -4,6 +4,10 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "~> 1.60"
     }
+    cloudflare = {
+      source  = "cloudflare/cloudflare"
+      version = "~> 5"
+    }
   }
 
   backend "s3" {
@@ -27,6 +31,10 @@ terraform {
 
 provider "hcloud" {
   token = var.hcloud_token
+}
+
+provider "cloudflare" {
+  api_token = var.cloudflare_api_token
 }
 
 # --- Networking ---
@@ -101,4 +109,48 @@ resource "hcloud_storage_box_subaccount" "subaccounts" {
     reachable_externally = true
     ssh_enabled          = true
   }
+}
+
+# --- DNS Records ---
+locals {
+  server_ips = {
+    for name, server in hcloud_server.machines : name => server.ipv4_address
+  }
+}
+
+locals {
+  dns_records_flat = flatten([
+    for domain_key, domain_data in var.domains : [
+      for record in domain_data.records : {
+        unique_id = "${domain_key}-${record.name}-${record.type}-${md5(record.content != null ? record.content : (record.server_name != null ? record.server_name : ""))}"
+
+        zone_id     = domain_data.zone_id
+        name        = record.name
+        type        = record.type
+        content     = record.content
+        server_name = record.server_name
+        ttl         = record.ttl
+        proxied     = record.proxied
+        priority    = record.priority
+      }
+    ]
+  ])
+}
+
+resource "cloudflare_dns_record" "this" {
+  for_each = {
+    for record in local.dns_records_flat : record.unique_id => record
+  }
+
+  zone_id = each.value.zone_id
+  type    = each.value.type
+  name    = each.value.name
+  content = (
+    each.value.server_name != null ?
+    hcloud_server.machines[each.value.server_name].ipv4_address :
+    each.value.content
+  )
+  ttl      = each.value.ttl
+  proxied  = each.value.proxied
+  priority = each.value.priority
 }

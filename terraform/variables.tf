@@ -4,6 +4,13 @@ variable "hcloud_token" {
   sensitive   = true
 }
 
+variable "cloudflare_api_token" {
+  description = "Cloudflare API Token"
+  type        = string
+  sensitive   = true
+}
+
+# Hetzner Cloud
 variable "admin_keys" {
   description = "Map of machine names to their public SSH keys"
   type        = map(string)
@@ -44,4 +51,21 @@ variable "storage_box_subaccount_secrets" {
   description = "Map of subaccount names to their passwords"
   type        = map(map(string))
   sensitive   = true
+}
+
+# Cloudflare
+variable "domains" {
+  description = "Map of domain names to their DNS records"
+  type = map(object({
+    zone_id = string
+    records = list(object({
+      name        = string
+      type        = string
+      content     = optional(string)
+      server_name = optional(string)
+      ttl         = optional(number, 1)
+      proxied     = optional(bool, false)
+      priority    = optional(number)
+    }))
+  }))
 }
