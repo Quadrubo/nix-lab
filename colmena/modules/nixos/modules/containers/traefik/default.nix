@@ -83,7 +83,7 @@ in
 
       image = mkOption {
         type = types.str;
-        default = "traefik:v3.6.1"; # renovate: docker
+        default = "traefik:v3.6.9"; # renovate: docker
       };
     };
   };
