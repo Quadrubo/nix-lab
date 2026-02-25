@@ -1,0 +1,22 @@
+services:
+  beszel:
+    image: henrygd/beszel:0.18.2
+    container_name: beszel
+    volumes:
+      - /mnt/storage/containers/beszel/beszel_data:/beszel_data
+    # ports:
+    #   - 8090:8090 # Web UI (HTTP)
+    restart: unless-stopped
+    networks:
+      - net-beszel
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.beszel.rule=Host(`{{ beszel_traefik_host }}`)"
+      - "traefik.http.routers.beszel.entrypoints=websecure"
+      - "traefik.http.routers.beszel.tls.certresolver=myresolver"
+      - "traefik.http.middlewares.beszel-ipallowlist.ipallowlist.sourcerange={{ (traefik_julian_ips) | join(',') }}"
+      - "traefik.http.routers.beszel.middlewares=beszel-ipallowlist@docker"
+
+networks:
+  net-beszel:
+    name: beszel

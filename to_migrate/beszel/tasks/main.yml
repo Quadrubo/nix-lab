@@ -1,0 +1,10 @@
+- name: Ensure beszel is up and running
+  ansible.builtin.include_role:
+    name: compose
+  vars:
+    compose_name: "{{ beszel_name }}"
+    compose_owner: "{{ beszel_owner }}"
+    compose_group: "{{ beszel_group }}"
+    compose_compose_template: "{{ beszel_compose_template }}"
+    compose_directories: "{{ beszel_directories }}"
+    compose_files: "{{ beszel_files }}"

@@ -129,8 +129,25 @@ in
     };
 
     networks = mkOption {
-      type = types.listOf types.str;
-      default = [ "borgmatic" ];
+      type = types.listOf (types.submodule ({ ... }: {
+        options = {
+          name = mkOption {
+            type = types.str;
+            description = "Podman network name.";
+          };
+          user = mkOption {
+            type = types.str;
+            default = "container-user";
+            description = "User that owns the rootless network.";
+          };
+          group = mkOption {
+            type = types.nullOr types.str;
+            default = null;
+            description = "Group used for the network unit, if needed.";
+          };
+        };
+      }));
+      default = [ { name = "borgmatic"; } ];
       description = "Additional networks to connect to (e.g., for database backups)";
     };
 
@@ -173,7 +190,7 @@ in
       autoStart = true;
 
       extraOptions = lib.flatten [
-        (map (net: "--network=${net}") cfg.networks)
+        (map (net: "--network=${net.name}") cfg.networks)
         [ "--device=/dev/fuse" ]
       ];
 
@@ -209,8 +226,8 @@ in
 
     systemd.services."podman-borgmatic" = mkMerge [
       (mkIf (cfg.networks != [ ]) {
-        after = map (net: "podman-network-${net}.service") cfg.networks;
-        requires = map (net: "podman-network-${net}.service") cfg.networks;
+        after = map (net: "podman-network-${net.name}-${net.user}.service") cfg.networks;
+        requires = map (net: "podman-network-${net.name}-${net.user}.service") cfg.networks;
       })
     ];
   };

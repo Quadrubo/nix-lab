@@ -38,7 +38,11 @@ in
   config = mkIf cfg.enable {
     myServices.podman = {
       enable = true;
-      networks = [ "umami" ];
+      networks = [
+        {
+          name = "umami";
+        }
+      ];
     };
 
     sops.secrets."umami_env" = {
@@ -128,15 +132,15 @@ in
 
     # Systemd Service Ordering
     systemd.services."podman-umami".after = [
-      "podman-network-umami.service"
+      "podman-network-umami-container-user.service"
       "podman-umami-db.service"
     ];
     systemd.services."podman-umami".requires = [
-      "podman-network-umami.service"
+      "podman-network-umami-container-user.service"
       "podman-umami-db.service"
     ];
 
-    systemd.services."podman-umami-db".after = [ "podman-network-umami.service" ];
-    systemd.services."podman-umami-db".requires = [ "podman-network-umami.service" ];
+    systemd.services."podman-umami-db".after = [ "podman-network-umami-container-user.service" ];
+    systemd.services."podman-umami-db".requires = [ "podman-network-umami-container-user.service" ];
   };
 }

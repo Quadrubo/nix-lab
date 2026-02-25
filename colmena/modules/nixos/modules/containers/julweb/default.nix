@@ -37,7 +37,9 @@ in
   config = mkIf cfg.enable {
     myServices.podman = {
       enable = true;
-      networks = [ "julweb" ];
+      networks = [
+        { name = "julweb"; }
+      ];
     };
 
     # Secrets
@@ -88,8 +90,8 @@ in
       ];
     };
 
-    systemd.services."podman-julweb-db".after = [ "podman-network-julweb.service" ];
-    systemd.services."podman-julweb-db".requires = [ "podman-network-julweb.service" ];
+    systemd.services."podman-julweb-db".after = [ "podman-network-julweb-container-user.service" ];
+    systemd.services."podman-julweb-db".requires = [ "podman-network-julweb-container-user.service" ];
 
     virtualisation.oci-containers.containers.julweb = {
       image = cfg.image;
@@ -141,11 +143,11 @@ in
 
     systemd.services."podman-julweb".after = [
       "podman-registry-login-ghcr.service"
-      "podman-network-julweb.service"
+      "podman-network-julweb-container-user.service"
     ];
     systemd.services."podman-julweb".requires = [
       "podman-registry-login-ghcr.service"
-      "podman-network-julweb.service"
+      "podman-network-julweb-container-user.service"
     ];
   };
 }
