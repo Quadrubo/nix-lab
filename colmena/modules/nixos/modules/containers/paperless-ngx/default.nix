@@ -30,7 +30,7 @@ let
 
       appImage = mkOption {
         type = types.str;
-        default = "ghcr.io/paperless-ngx/paperless-ngx:2.20.5"; # renovate: docker
+        default = "ghcr.io/paperless-ngx/paperless-ngx:2.20.9"; # renovate: docker
       };
 
       dbImage = mkOption {
