@@ -28,7 +28,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "mongo:8.0.12-noble"; # renovate: docker
+      default = "mongo:8.2.5-noble"; # renovate: docker
     };
 
     domain = mkOption {
