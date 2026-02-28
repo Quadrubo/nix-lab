@@ -34,7 +34,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "freikin/dawarich:0.37.3"; # renovate: docker
+      default = "freikin/dawarich:1.3.1"; # renovate: docker
     };
 
     dbImage = mkOption {
