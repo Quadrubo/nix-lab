@@ -25,7 +25,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "onlyoffice/documentserver:8.3"; # renovate: docker
+      default = "onlyoffice/documentserver:9.3"; # renovate: docker
     };
 
     logsPath = mkOption {
