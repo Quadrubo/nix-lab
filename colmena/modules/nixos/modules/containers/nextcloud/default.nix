@@ -30,12 +30,12 @@ in
 
     appImage = mkOption {
       type = types.str;
-      default = "nextcloud:32-apache"; # renovate: docker
+      default = "nextcloud:33-apache"; # renovate: docker
     };
 
     cronImage = mkOption {
       type = types.str;
-      default = "nextcloud:32-apache"; # renovate: docker
+      default = "nextcloud:33-apache"; # renovate: docker
     };
 
     dbImage = mkOption {
