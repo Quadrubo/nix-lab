@@ -25,7 +25,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "mariadb:11"; # renovate: docker
+      default = "mariadb:12"; # renovate: docker
     };
 
     domain = mkOption {
