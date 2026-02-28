@@ -9,6 +9,7 @@ with lib;
 
 let
   cfg = config.myServices.beszel-agent;
+  hasDevices = cfg.devices != [ ];
 in
 {
   options = {
@@ -21,7 +22,7 @@ in
 
       image = mkOption {
         type = types.str;
-        default = "henrygd/beszel-agent:0.18.2"; # renovate: docker
+        default = "henrygd/beszel-agent:0.18.2-alpine"; # renovate: docker
         description = "The docker image to run.";
       };
 
@@ -60,6 +61,16 @@ in
         ];
         description = "List of extra filesystems to monitor.";
       };
+
+      devices = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        example = [
+          "/dev/sda"
+          "/dev/sdb"
+        ];
+        description = "Block devices to pass through to Beszel. These will be used in S.M.A.R.T. monitoring. Using this option will run the container as root.";
+      };
     };
   };
 
@@ -68,13 +79,15 @@ in
       sopsFile = cfg.sopsFile;
       format = "yaml";
       key = "beszel_env";
-      owner = "container-user";
+      owner = if hasDevices then "root" else "container-user";
       restartUnits = [ "podman-beszel-agent.service" ];
     };
 
     # Directories
     systemd.tmpfiles.rules = [
-      "d /mnt/storage/containers/beszel-agent/var/lib/beszel-agent 0755 container-user users -"
+      "d /mnt/storage/containers/beszel-agent/var/lib/beszel-agent 0755 ${
+        if hasDevices then "root" else "container-user"
+      } users -"
     ];
 
     # Container
@@ -87,13 +100,21 @@ in
         "--health-interval=10s"
         "--health-retries=12"
         "--network=host"
-      ];
+      ]
+      ++ optionals hasDevices (
+        [
+          "--cap-add=SYS_RAWIO"
+          "--cap-add=SYS_ADMIN"
+        ]
+        ++ map (device: "--device=${device}") cfg.devices
+      );
 
-      # TODO: figure out smart data once servy is using this config
-      # https://beszel.dev/guide/smart-data
+      # TODO: also check if nvme are working, it could be necessary to mount those differently
+      # it seems like they currently don't update.
 
       podman = {
-        user = "container-user";
+        # TODO: create issue that S.M.A.R.T. monitoring requires running as root
+        user = if hasDevices then "root" else "container-user";
         sdnotify = "healthy";
       };
 

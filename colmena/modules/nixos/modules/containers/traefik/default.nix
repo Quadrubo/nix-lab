@@ -90,11 +90,16 @@ let
   );
 
   dynamicConfig = pkgs.writeText "dynamic.yml" (
-    builtins.toJSON {
-      http = {
-        serversTransports = cfg.serversTransports;
-      };
-    }
+    builtins.toJSON (
+      let
+        httpCfg = {
+          http = {
+            serversTransports = if cfg.serversTransports != { } then cfg.serversTransports else null;
+          };
+        };
+      in
+      lib.optionalAttrs (httpCfg.http.serversTransports != null) httpCfg
+    )
   );
 in
 {

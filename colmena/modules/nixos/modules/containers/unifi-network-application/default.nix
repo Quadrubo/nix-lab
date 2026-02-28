@@ -68,7 +68,7 @@ in
 
   config = mkIf cfg.enable {
     myServices.traefik.serversTransports = {
-      "unifi-network-application" = {
+      unifi-network-application = {
         insecureSkipVerify = true;
       };
     };
@@ -129,6 +129,7 @@ in
       ];
     };
 
+    # TODO: get this working and connected to the AP
     virtualisation.oci-containers.containers.unifi-network-application = {
       image = cfg.image;
       autoStart = true;

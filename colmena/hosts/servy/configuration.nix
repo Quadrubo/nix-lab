@@ -11,7 +11,10 @@
     ../../modules/nixos/default.nix
   ];
 
-  boot.loader.grub.enable = true;
+  boot.loader.grub = {
+    efiSupport = true;
+    efiInstallAsRemovable = true;
+  };
 
   services.openssh = {
     enable = true;
@@ -70,10 +73,38 @@
   time.timeZone = "Europe/Berlin";
 
   networking.firewall.enable = true;
+  networking.hostId = "ccb0cce0";
+  console.keyMap = "de";
 
   # Sops
   sops.defaultSopsFile = ../../secrets/servy.yaml;
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
+
+  sops.secrets.zfs_storage_pool_key = {
+    sopsFile = ../../secrets/servy.yaml;
+    format = "yaml";
+    key = "zfs_storage_pool_key";
+    owner = "root";
+    group = "root";
+    mode = "0400";
+    path = "/run/secrets/zfs_storage_pool_key";
+  };
+
+  boot.zfs.forceImportRoot = true;
+  boot.zfs.forceImportAll = true;
+  boot.zfs.extraPools = [ "storage_pool" ];
+  boot.supportedFilesystems = [ "zfs" ];
+
+  services.zfs = {
+    autoScrub.enable = true;
+    trim.enable = true;
+  };
+
+  # TODO: find place for tmux
+  # TODO: get nix-shell or nix shell working for debugging
+  environment.systemPackages = with pkgs; [
+    tmux
+  ];
 
   sops.secrets."ghcr_token" = {
     format = "yaml";
@@ -106,51 +137,68 @@
 
     actual-server.instances = {
       personal = {
-        enable = false;
+        enable = true;
 
-        domain = "actual.l.mailward.de";
+        domain = "actual.l.qudr.de";
       };
 
       family = {
-        enable = false;
+        enable = true;
 
-        domain = "actual-g.l.mailward.de";
+        domain = "actual-g.l.qudr.de";
       };
     };
 
     beszel = {
-      enable = false;
+      enable = true;
 
-      domain = "beszel.l.mailward.de";
+      domain = "beszel.l.qudr.de";
     };
 
     beszel-agent = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPP0vtzOrcit3+zUzMAQ80IK04Og+WJ0O3hMnaF4FLiG";
       hubUrl = "https://beszel.l.qudr.de";
+
+      extraFilesystems = [
+        {
+          name = "zfs";
+          path = "/mnt/storage";
+        }
+      ];
+
+      devices = [
+        "/dev/sda"
+        "/dev/sdb"
+        "/dev/sdc"
+        "/dev/sdd"
+        "/dev/nvme0n1"
+        "/dev/nvme1n1"
+      ];
     };
 
     bitwarden-backup = {
-      enable = false;
+      enable = true;
+
       sopsFile = ../../secrets/servy.yaml;
     };
 
     chartdb = {
-      enable = false;
+      enable = true;
 
-      domain = "chartdb.l.mailward.de";
+      domain = "chartdb.l.qudr.de";
     };
 
     crowdsec = {
-      enable = false;
+      enable = true;
 
       parsers = [ "crowdsecurity/nextcloud-whitelist" ];
     };
 
     crowdsec-firewall-bouncer = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
     };
 
@@ -158,95 +206,94 @@
       enable = false;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "dawarich.l.mailward.de";
+      domain = "dawarich.l.qudr.de";
     };
 
     freshrss = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "freshrss.l.mailward.de";
+      domain = "freshrss.l.qudr.de";
     };
 
     gitea = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "gitea.l.mailward.de";
+      domain = "gitea.l.qudr.de";
     };
 
     hedgedoc = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "hedgedoc.r.mailward.de";
+      domain = "hedgedoc.r.qudr.de";
     };
 
     hemmelig = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "hemmelig.r.mailward.de";
+      domain = "hemmelig.r.qudr.de";
     };
 
     immich = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "immich.r.mailward.de";
-
-      # TODO: remove options when on actual hardware
-      enableMachineLearning = false;
+      domain = "immich.r.qudr.de";
     };
 
     kitchenowl = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "kitchenowl.r.mailward.de";
+      domain = "kitchenowl.r.qudr.de";
     };
 
     nextcloud = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "nextcloud.r.mailward.de";
-      cspHostname = "mailward.de";
+      domain = "nextcloud.r.qudr.de";
+      cspHostname = "qudr.de";
     };
 
     ntfy = {
-      enable = false;
+      enable = true;
 
-      domain = "ntfy.r.mailward.de";
+      domain = "ntfy.r.qudr.de";
     };
 
     obsidian-livesync = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "obsidian-livesync.r.mailward.de";
+      domain = "obsidian-livesync.r.qudr.de";
     };
 
+    # TOOD: get this container working
+    # maybe it can work without being exposed
     onlyoffice-documentserver = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "nextcloudds.r.mailward.de";
+      domain = "nextcloudds.r.qudr.de";
     };
 
     open-archiver = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "open-archiver.l.mailward.de";
+      domain = "open-archiver.l.qudr.de";
     };
 
     paperless-ngx.instances = {
       family = {
-        enable = false;
+        enable = true;
         sopsFile = ../../secrets/servy.yaml;
 
-        domain = "paperless.l.mailward.de";
+        domain = "paperless.l.qudr.de";
         appTitle = "Paperless (Gemeinsam)";
 
         scanTo = {
@@ -260,10 +307,10 @@
       };
 
       julian = {
-        enable = false;
+        enable = true;
         sopsFile = ../../secrets/servy.yaml;
 
-        domain = "paperless-j.l.mailward.de";
+        domain = "paperless-j.l.qudr.de";
         appTitle = "Paperless (Julian)";
 
         scanTo = {
@@ -277,10 +324,10 @@
       };
 
       lara = {
-        enable = false;
+        enable = true;
         sopsFile = ../../secrets/servy.yaml;
 
-        domain = "paperless-l.l.mailward.de";
+        domain = "paperless-l.l.qudr.de";
         appTitle = "Paperless (Lara)";
 
         scanTo = {
@@ -290,62 +337,63 @@
       };
     };
 
+    # TODO: get this working on rootless podman
     pelican = {
       enable = false;
       sopsFile = ../../secrets/servy.yaml;
 
-      panelDomain = "pelican-panel.l.mailward.de";
-      wingsDomain = "pelican-wings.l.mailward.de";
+      panelDomain = "pelican-panel.l.qudr.de";
+      wingsDomain = "pelican-wings.l.qudr.de";
     };
 
+    # TODO: remove, beszel replaces it
     scrutiny = {
       enable = false;
 
-      domain = "scrutiny.l.mailward.de";
+      domain = "scrutiny.l.qudr.de";
 
-      # TODO: add these options on actual hardware
-      # devices = [
-      #   "/dev/sda"
-      #   "/dev/sdb"
-      #   "/dev/sdc"
-      #   "/dev/sdd"
-      #   "/dev/nvme0n1"
-      #   "/dev/nvme1n1"
-      # ];
+      devices = [
+        "/dev/sda"
+        "/dev/sdb"
+        "/dev/sdc"
+        "/dev/sdd"
+        "/dev/nvme0n1"
+        "/dev/nvme1n1"
+      ];
     };
 
     speedtest-tracker = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "speedtest.l.mailward.de";
+      domain = "speedtest.l.qudr.de";
     };
 
     spliit = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "spliit.r.mailward.de";
+      domain = "spliit.r.qudr.de";
     };
 
     syncthing = {
-      enable = false;
+      enable = true;
 
-      domain = "syncthing.r.mailward.de";
+      domain = "syncthing.r.qudr.de";
     };
 
     traggo = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "traggo.l.mailward.de";
+      domain = "traggo.l.qudr.de";
     };
 
     unifi-network-application = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
-      domain = "unifi.l.mailward.de";
+      domain = "unifi.l.qudr.de";
     };
   };
 

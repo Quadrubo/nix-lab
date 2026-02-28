@@ -4,7 +4,7 @@ keys:
   - &framy age1atk0ad8gv9eeuz0nn5z8798plqqkjue870aa7k8f0y0nrdauuc4qc5wsaj
   # Servers
   - &publy age1dnkzhchnf3zj48msg08hqxmcf0az3csffcg4jjm9s8r7x2c303ysr0tfzg
-  - &servy age1waz6xepvnrsp4fmstqnfnmvr6g5h6lnwl4qlzava848hl38j8dzqwe9g3v
+  - &servy age1xuznpy9dc84gx53slfvguh7ajsqwqvdamptt2yjqn5h3t4ej5qyq5z0atf
 creation_rules:
   # --- Groups ---
   # Home secrets
