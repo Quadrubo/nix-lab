@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "binwiederhier/ntfy:v2.16.0"; # renovate: docker
+      default = "binwiederhier/ntfy:v2.17.0"; # renovate: docker
     };
 
     configPath = mkOption {
