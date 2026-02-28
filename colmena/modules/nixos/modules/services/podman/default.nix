@@ -12,14 +12,16 @@ let
 
   networkServices = listToAttrs (
     map (net: {
-      name = "podman-network-${net}";
+      name = "podman-network-${net.name}-${net.user}";
       value = {
         path = [ pkgs.podman ];
-        script = "podman network exists ${net} || podman network create ${net}";
+        script = "podman network exists ${net.name} || podman network create ${net.name}";
         serviceConfig = {
           Type = "oneshot";
-          User = "container-user";
+          User = net.user;
           RemainAfterExit = true;
+        } // optionalAttrs (net.group != null) {
+          Group = net.group;
         };
         wantedBy = [ "multi-user.target" ];
       };
@@ -52,9 +54,26 @@ in
     enable = mkEnableOption "Podman Helpers";
 
     networks = mkOption {
-      type = types.listOf types.str;
+      type = types.listOf (types.submodule ({ ... }: {
+        options = {
+          name = mkOption {
+            type = types.str;
+            description = "Podman network name.";
+          };
+          user = mkOption {
+            type = types.str;
+            default = "container-user";
+            description = "User that owns the rootless network.";
+          };
+          group = mkOption {
+            type = types.nullOr types.str;
+            default = null;
+            description = "Group used for the network unit, if needed.";
+          };
+        };
+      }));
       default = [ ];
-      description = "List of Podman networks to create automatically.";
+      description = "List of Podman networks to create automatically (per user).";
     };
 
     ghcr = {

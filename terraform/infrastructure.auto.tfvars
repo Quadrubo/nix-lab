@@ -1,4 +1,8 @@
 servers = {
+  # "servy" = {
+  #   server_type = "cx23"
+  #   private_ip  = "10.0.1.3"
+  # }
 }
 
 storage_boxes = {
@@ -32,7 +36,7 @@ storage_box_subaccounts = {
 }
 
 admin_keys = {
-  #   framy = "ssh-ed25519 AAAA... user@framy"
+  framy = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAILOBhaJ29X++P+Ceu01qSdMeQcjviiG4rIL/GHJRorJ9 julian@nixos"
   compy = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICOIyANbVLEpwzS/2D5eNU40mOIuOOqTcJFUr3LY0+xt julian@nixos"
 }
 
@@ -115,4 +119,12 @@ domains = {
       }
     ]
   }
+  # "mailward.de" = {
+  #   zone_id = "25eb49fa4d6f88565b27902a556e0979"
+  #   records = [{
+  #     type        = "A"
+  #     name        = "*"
+  #     server_name = "servy"
+  #   }]
+  # }
 }

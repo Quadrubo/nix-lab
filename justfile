@@ -1,6 +1,6 @@
 TF_HOSTS_FILE := "tf_hosts.json"
 MANUAL_HOSTS_FILE := "manual_hosts.json"
-HOSTS_FILE := "hosts.json"
+HOSTS_FILE := "colmena/hosts.json"
 
 tf-apply +args="":
     cd terraform && terraform apply {{ args }}

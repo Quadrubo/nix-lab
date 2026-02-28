@@ -39,6 +39,18 @@
             }
           )
         ];
+        servy = [
+          sops-nix.nixosModules.sops
+          disko.nixosModules.disko
+          ./hosts/servy/disko-config.nix
+          ./hosts/servy/configuration.nix
+          (
+            { ... }:
+            {
+              networking.hostName = "servy";
+            }
+          )
+        ];
       };
     in
     {
@@ -47,11 +59,15 @@
           inherit system;
           modules = hostModules.publy;
         };
+        servy = nixpkgs.lib.nixosSystem {
+          inherit system;
+          modules = hostModules.servy;
+        };
       };
 
       colmena =
         let
-          serverIps = builtins.fromJSON (builtins.readFile ../hosts.json);
+          serverIps = builtins.fromJSON (builtins.readFile ./hosts.json);
         in
         {
           meta = {
@@ -82,6 +98,20 @@
 
               # Import host-specific config
               imports = hostModules.publy;
+            };
+          servy =
+            { ... }:
+            {
+              deployment = {
+                targetHost = serverIps.servy;
+                targetUser = "colmena";
+                tags = [
+                  "public"
+                ];
+              };
+
+              # Import host-specific config
+              imports = hostModules.servy;
             };
           # Host: andrea
           # andrea =

@@ -50,8 +50,7 @@ in
 
     parsers = mkOption {
       type = types.listOf types.str;
-      # TODO: remove nextcloud from defaults
-      default = [ "crowdsecurity/nextcloud-whitelist" ];
+      default = [ ];
       description = "List of CrowdSec parsers to install";
     };
 
@@ -65,7 +64,9 @@ in
   config = mkIf cfg.enable {
     myServices.podman = {
       enable = true;
-      networks = [ "crowdsec" ];
+      networks = [
+        { name = "crowdsec"; }
+      ];
     };
 
     # Directories
@@ -112,7 +113,7 @@ in
       ];
     };
 
-    systemd.services."podman-crowdsec".after = [ "podman-network-traefik.service" ];
-    systemd.services."podman-crowdsec".requires = [ "podman-network-traefik.service" ];
+    systemd.services."podman-crowdsec".after = [ "podman-network-traefik-container-user.service" ];
+    systemd.services."podman-crowdsec".requires = [ "podman-network-traefik-container-user.service" ];
   };
 }

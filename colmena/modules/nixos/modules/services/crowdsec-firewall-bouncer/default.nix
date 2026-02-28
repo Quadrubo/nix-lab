@@ -27,6 +27,8 @@ in
       # Don't auto register because crowdsec is running in a container
       registerBouncer.enable = false;
 
+      # Use the following command to retrieve the key
+      # sudo -u container-user podman exec -it crowdsec cscli bouncers add firewall-bouncer
       secrets.apiKeyPath = config.sops.secrets."crowdsec_firewall_bouncer_key".path;
 
       settings = {
