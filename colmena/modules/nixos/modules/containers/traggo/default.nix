@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "traggo/server:0.8.2"; # renovate: docker
+      default = "traggo/server:0.8.3"; # renovate: docker
     };
 
     domain = mkOption {
