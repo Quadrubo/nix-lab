@@ -16,7 +16,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/analogj/scrutiny:v0.8.1-omnibus"; # renovate: docker
+      default = "ghcr.io/analogj/scrutiny:v0.8.6-omnibus"; # renovate: docker
     };
 
     domain = mkOption {
