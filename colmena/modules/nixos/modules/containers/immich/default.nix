@@ -35,7 +35,7 @@ in
 
     redisImage = mkOption {
       type = types.str;
-      default = "docker.io/valkey/valkey:8@sha256:81db6d39e1bba3b3ff32bd3a1b19a6d69690f94a3954ec131277b9a26b95b3aa"; # renovate: docker
+      default = "docker.io/valkey/valkey:9@sha256:546304417feac0874c3dd576e0952c6bb8f06bb4093ea0c9ca303c73cf458f63"; # renovate: docker
     };
 
     dbImage = mkOption {
@@ -217,7 +217,9 @@ in
     };
 
     systemd.services."podman-immich-redis".after = [ "podman-network-immich-container-user.service" ];
-    systemd.services."podman-immich-redis".requires = [ "podman-network-immich-container-user.service" ];
+    systemd.services."podman-immich-redis".requires = [
+      "podman-network-immich-container-user.service"
+    ];
 
     systemd.services."podman-immich-db".after = [ "podman-network-immich-container-user.service" ];
     systemd.services."podman-immich-db".requires = [ "podman-network-immich-container-user.service" ];
