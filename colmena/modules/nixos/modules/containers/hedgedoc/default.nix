@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "quay.io/hedgedoc/hedgedoc:1.10.5"; # renovate: docker
+      default = "quay.io/hedgedoc/hedgedoc:1.10.7"; # renovate: docker
     };
 
     dbImage = mkOption {
