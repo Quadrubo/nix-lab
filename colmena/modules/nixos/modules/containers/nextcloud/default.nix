@@ -30,12 +30,12 @@ in
 
     appImage = mkOption {
       type = types.str;
-      default = "nextcloud:32-apache"; # renovate: docker
+      default = "nextcloud:33.0.0-apache"; # renovate: docker
     };
 
     cronImage = mkOption {
       type = types.str;
-      default = "nextcloud:32-apache"; # renovate: docker
+      default = "nextcloud:33.0.0-apache"; # renovate: docker
     };
 
     dbImage = mkOption {
@@ -175,13 +175,16 @@ in
         "traefik.http.routers.nextcloud.entrypoints" = "websecure";
         "traefik.http.routers.nextcloud.tls.certresolver" = "myresolver";
         "traefik.http.routers.nextcloud.middlewares" = "nextcloud,nextcloud_redirect";
-        "traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy" = "frame-ancestors 'self' ${cfg.cspHostname} *.${cfg.cspHostname}";
+        "traefik.http.middlewares.nextcloud.headers.contentSecurityPolicy" =
+          "frame-ancestors 'self' ${cfg.cspHostname} *.${cfg.cspHostname}";
         "traefik.http.middlewares.nextcloud.headers.stsSeconds" = "155520011";
         "traefik.http.middlewares.nextcloud.headers.stsIncludeSubdomains" = "true";
         "traefik.http.middlewares.nextcloud.headers.stsPreload" = "true";
         "traefik.http.middlewares.nextcloud_redirect.redirectregex.permanent" = "true";
-        "traefik.http.middlewares.nextcloud_redirect.redirectregex.regex" = "https://(.*)/.well-known/(?:card|cal)dav";
-        "traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement" = "https://${cfg.domain}/remote.php/dav/";
+        "traefik.http.middlewares.nextcloud_redirect.redirectregex.regex" =
+          "https://(.*)/.well-known/(?:card|cal)dav";
+        "traefik.http.middlewares.nextcloud_redirect.redirectregex.replacement" =
+          "https://${cfg.domain}/remote.php/dav/";
       };
     };
 
@@ -207,11 +210,19 @@ in
       ];
     };
 
-    systemd.services."podman-nextcloud-db".after = [ "podman-network-nextcloud-container-user.service" ];
-    systemd.services."podman-nextcloud-db".requires = [ "podman-network-nextcloud-container-user.service" ];
+    systemd.services."podman-nextcloud-db".after = [
+      "podman-network-nextcloud-container-user.service"
+    ];
+    systemd.services."podman-nextcloud-db".requires = [
+      "podman-network-nextcloud-container-user.service"
+    ];
 
-    systemd.services."podman-nextcloud-redis".after = [ "podman-network-nextcloud-container-user.service" ];
-    systemd.services."podman-nextcloud-redis".requires = [ "podman-network-nextcloud-container-user.service" ];
+    systemd.services."podman-nextcloud-redis".after = [
+      "podman-network-nextcloud-container-user.service"
+    ];
+    systemd.services."podman-nextcloud-redis".requires = [
+      "podman-network-nextcloud-container-user.service"
+    ];
 
     systemd.services."podman-nextcloud".after = [
       "podman-network-nextcloud-container-user.service"
