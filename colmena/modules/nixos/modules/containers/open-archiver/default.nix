@@ -25,7 +25,7 @@ in
 
     appImage = mkOption {
       type = types.str;
-      default = "logiclabshq/open-archiver:v0.4.2"; # renovate: docker
+      default = "logiclabshq/open-archiver:v0.5.0"; # renovate: docker
     };
 
     dbImage = mkOption {
