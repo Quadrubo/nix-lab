@@ -39,6 +39,12 @@ in
       description = "Host port for Gitea SSH.";
     };
 
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
+
     timeZone = mkOption {
       type = types.str;
       default = "Europe/Berlin";
@@ -90,6 +96,8 @@ in
       extraOptions = [
         "--network=gitea"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
 
       environment = {
         MARIADB_DATABASE = "gitea";

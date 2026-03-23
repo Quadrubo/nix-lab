@@ -129,24 +129,29 @@ in
     };
 
     networks = mkOption {
-      type = types.listOf (types.submodule ({ ... }: {
-        options = {
-          name = mkOption {
-            type = types.str;
-            description = "Podman network name.";
-          };
-          user = mkOption {
-            type = types.str;
-            default = "container-user";
-            description = "User that owns the rootless network.";
-          };
-          group = mkOption {
-            type = types.nullOr types.str;
-            default = null;
-            description = "Group used for the network unit, if needed.";
-          };
-        };
-      }));
+      type = types.listOf (
+        types.submodule (
+          { ... }:
+          {
+            options = {
+              name = mkOption {
+                type = types.str;
+                description = "Podman network name.";
+              };
+              user = mkOption {
+                type = types.str;
+                default = "container-user";
+                description = "User that owns the rootless network.";
+              };
+              group = mkOption {
+                type = types.nullOr types.str;
+                default = null;
+                description = "Group used for the network unit, if needed.";
+              };
+            };
+          }
+        )
+      );
       default = [ { name = "borgmatic"; } ];
       description = "Additional networks to connect to (e.g., for database backups)";
     };
@@ -170,18 +175,18 @@ in
       sopsFile = cfg.sopsFile;
       format = "yaml";
       key = "borgmatic_env";
-      owner = "container-user";
+      owner = "root";
       restartUnits = [ "podman-borgmatic.service" ];
     };
 
     # Directories
     systemd.tmpfiles.rules = [
-      "d /mnt/storage/borg-repository 0755 container-user users -"
-      "d /mnt/storage/containers/borgmatic/config 0755 container-user users -"
-      "d /mnt/storage/containers/borgmatic/state 0755 container-user users -"
-      "d /mnt/storage/containers/borgmatic/keys 0755 container-user users -"
-      "d /mnt/storage/containers/borgmatic/ssh-keys 0755 container-user users -"
-      "d /mnt/storage/containers/borgmatic/cache 0755 container-user users -"
+      "d /mnt/storage/borg-repository 0755 root root -"
+      "d /mnt/storage/containers/borgmatic/config 0755 root root -"
+      "d /mnt/storage/containers/borgmatic/state 0755 root root -"
+      "d /mnt/storage/containers/borgmatic/keys 0755 root root -"
+      "d /mnt/storage/containers/borgmatic/ssh-keys 0755 root root -"
+      "d /mnt/storage/containers/borgmatic/cache 0755 root root -"
     ];
 
     # Container
@@ -189,13 +194,16 @@ in
       image = cfg.image;
       autoStart = true;
 
-      extraOptions = lib.flatten [
-        (map (net: "--network=${net.name}") cfg.networks)
-        [ "--device=/dev/fuse" ]
+      extraOptions = [
+        "--device=/dev/fuse"
+        # Because of rootless podman, we can't connect to other containers networks.
+        # Therefor we use host network to access database containers published via loopback.
+        "--network=host"
       ];
 
-      podman.user = "container-user";
+      podman.user = "root";
 
+      # TODO: See if this is necessary
       capabilities = {
         SYS_ADMIN = true;
       };
@@ -224,11 +232,5 @@ in
       ];
     };
 
-    systemd.services."podman-borgmatic" = mkMerge [
-      (mkIf (cfg.networks != [ ]) {
-        after = map (net: "podman-network-${net.name}-${net.user}.service") cfg.networks;
-        requires = map (net: "podman-network-${net.name}-${net.user}.service") cfg.networks;
-      })
-    ];
   };
 }

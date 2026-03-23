@@ -185,6 +185,61 @@
       sopsFile = ../../secrets/servy.yaml;
     };
 
+    borgmatic = {
+      enable = true;
+      sopsFile = ../../secrets/servy.yaml;
+
+      # Daily at 1am
+      cronSchedule = "0 1 * * *";
+
+      sshCommand = "ssh -p 23 -i /root/.ssh/sub4";
+
+      sourceDirectories = [
+        "/mnt/storage/backups" # Backups from phone, etc.
+        "/mnt/storage/containers"
+        "/mnt/storage/documents"
+      ];
+
+      repositories = [
+        {
+          path = "ssh://u333539-sub4@u333539.your-storagebox.de/./backup";
+          label = "Boxy";
+        }
+      ];
+
+      mariadbDatabases = [
+        {
+          name = "gitea";
+          hostname = "127.0.0.1";
+          port = 3307;
+          username = "gitea";
+          password = "\${GITEA_DB_PASSWORD}";
+          options = "--skip-ssl";
+        }
+        {
+          name = "nextcloud";
+          hostname = "127.0.0.1";
+          port = 3308;
+          username = "nextcloud";
+          password = "\${NEXTCLOUD_DB_PASSWORD}";
+          options = "--skip-ssl";
+        }
+        # TODO: pelican
+        {
+          name = "speedtest_tracker";
+          hostname = "127.0.0.1";
+          port = 3309;
+          username = "speedtest";
+          password = "\${SPEEDTEST_TRACKER_DB_PASSWORD}";
+          options = "--skip-ssl";
+        }
+      ];
+
+      networks = [
+        { name = "borgmatic"; }
+      ];
+    };
+
     chartdb = {
       enable = true;
 
@@ -221,6 +276,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "gitea.l.qudr.de";
+      dbLocalhostPort = 3307;
     };
 
     hedgedoc = {
@@ -257,6 +313,7 @@
 
       domain = "nextcloud.r.qudr.de";
       cspHostname = "qudr.de";
+      dbLocalhostPort = 3308;
     };
 
     ntfy = {
@@ -367,6 +424,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "speedtest.l.qudr.de";
+      dbLocalhostPort = 3309;
     };
 
     spliit = {

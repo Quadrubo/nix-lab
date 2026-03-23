@@ -59,6 +59,12 @@ in
       default = "/mnt/storage/containers/nextcloud-db/mysql";
       description = "Path to store Nextcloud database data.";
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -105,6 +111,8 @@ in
       extraOptions = [
         "--network=nextcloud"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
 
       cmd = [
         "--transaction-isolation=READ-COMMITTED"

@@ -55,6 +55,12 @@ in
       default = "/mnt/storage/containers/speedtest-tracker-db/mysql";
       description = "Path to store Speedtest Tracker database data.";
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -99,6 +105,8 @@ in
       extraOptions = [
         "--network=speedtest-tracker"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
 
       environment = {
         MARIADB_DATABASE = "speedtest_tracker";
@@ -156,8 +164,12 @@ in
       };
     };
 
-    systemd.services."podman-speedtest-tracker-db".after = [ "podman-network-speedtest-tracker-container-user.service" ];
-    systemd.services."podman-speedtest-tracker-db".requires = [ "podman-network-speedtest-tracker-container-user.service" ];
+    systemd.services."podman-speedtest-tracker-db".after = [
+      "podman-network-speedtest-tracker-container-user.service"
+    ];
+    systemd.services."podman-speedtest-tracker-db".requires = [
+      "podman-network-speedtest-tracker-container-user.service"
+    ];
 
     systemd.services."podman-speedtest-tracker".after = [
       "podman-network-speedtest-tracker-container-user.service"
