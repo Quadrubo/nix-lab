@@ -31,7 +31,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "crowdsecurity/crowdsec:v1.7.6"; # renovate: docker
+      default = "crowdsecurity/crowdsec:v1.7.7"; # renovate: docker
     };
 
     collections = mkOption {
