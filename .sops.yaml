@@ -2,6 +2,7 @@ keys:
   # Clients
   - &compy age1sfml49j8htm9cgzzewm4nkglkq2klfx4ljrsp4z2dyn3yeqk6d8qv3n0ag
   - &framy age1atk0ad8gv9eeuz0nn5z8798plqqkjue870aa7k8f0y0nrdauuc4qc5wsaj
+  - &work age1gne8gv6u6kj7h2f9uxpgcsw70hjafey7n2gyn0wjlwfhg8dh6ejsu3th8m
   # Servers
   - &publy age1dnkzhchnf3zj48msg08hqxmcf0az3csffcg4jjm9s8r7x2c303ysr0tfzg
   - &servy age1xuznpy9dc84gx53slfvguh7ajsqwqvdamptt2yjqn5h3t4ej5qyq5z0atf
@@ -13,6 +14,7 @@ creation_rules:
       - age:
         - *compy
         - *framy
+        - *work
         - *servy
   # --- Servers ---
   # Publy secrets
@@ -21,6 +23,7 @@ creation_rules:
       - age:
         - *compy
         - *framy
+        - *work
         - *publy
   # Servy secrets
   - path_regex: secrets/servy\.yaml$
@@ -28,4 +31,5 @@ creation_rules:
       - age:
         - *compy
         - *framy
+        - *work
         - *servy
