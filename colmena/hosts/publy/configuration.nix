@@ -110,6 +110,7 @@
     julweb = {
       enable = true;
       sopsFile = ../../secrets/publy.yaml;
+      dbLocalhostPort = 3306;
     };
 
     umami = {
@@ -140,7 +141,7 @@
       mariadbDatabases = [
         {
           name = "julweb";
-          hostname = "julweb-db";
+          hostname = "127.0.0.1";
           port = 3306;
           username = "julweb";
           password = "\${JULWEB_DB_PASSWORD}";
@@ -150,7 +151,6 @@
 
       networks = [
         { name = "borgmatic"; }
-        { name = "julweb"; }
       ];
     };
 

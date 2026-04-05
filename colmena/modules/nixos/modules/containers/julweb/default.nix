@@ -32,6 +32,12 @@ in
       type = types.str;
       default = "mariadb:10.11"; # renovate: docker
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -77,6 +83,8 @@ in
       extraOptions = [ "--network=julweb" ];
 
       podman.user = "container-user";
+
+      ports = lib.optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
 
       environment = {
         MYSQL_DATABASE = "julweb";
