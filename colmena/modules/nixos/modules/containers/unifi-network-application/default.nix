@@ -143,7 +143,7 @@ in
       ];
     };
 
-    # TODO: get this working and connected to the AP
+    # TODO: switch to unifi os server which replaces this
     virtualisation.oci-containers.containers.unifi-network-application = {
       image = cfg.image;
       autoStart = true;
@@ -156,10 +156,13 @@ in
       ];
 
       ports = [
-        "8443:8443"
-        "3478:3478/udp"
-        "10001:10001/udp"
-        "8100:8100"
+        # Changed from default 8080 to avoid conflict with Traefik
+        # Set unifi.http.port=8100 in /mnt/storage/containers/unifi-network-application/config/data/system.properties
+        "8100:8100" # Device inform
+        # "8443:8443" # Web GUI HTTPS
+        "3478:3478/udp" # STUN
+        # not needed, use set-inform or DNS instead
+        # "10001:10001/udp" # L2 device discovery
       ];
 
       environment = {
@@ -217,6 +220,15 @@ in
     systemd.services."podman-unifi-network-application".requires = [
       "podman-network-unifi-network-application-container-user.service"
       "podman-unifi-db.service"
+    ];
+
+    networking.firewall.allowedTCPPorts = [
+      8100 # UniFi device inform (changed from default 8080 via system.properties)
+    ];
+    networking.firewall.allowedUDPPorts = [
+      3478 # UniFi STUN
+      # only needed for automatic discovery of new devices on the same subnet. use set-inform or DNS instead
+      # 10001 # UniFi L2 discovery
     ];
   };
 }
