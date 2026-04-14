@@ -25,11 +25,16 @@
   };
   system.stateVersion = "25.11";
 
-  nix.settings.trusted-users = [
-    "root"
-    "colmena"
-  ];
-
+  nix.settings = {
+    trusted-users = [
+      "root"
+      "colmena"
+    ];
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+  };
   # General Settings
   users.users.colmena = {
     isNormalUser = true;
