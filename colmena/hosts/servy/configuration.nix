@@ -265,6 +265,16 @@
       sopsFile = ../../secrets/servy.yaml;
     };
 
+    bentopdf = {
+      enable = true;
+
+      domain = "pdf.l.qudr.de";
+      allowlistGroups = [
+        "julian"
+        "lara"
+      ];
+    };
+
     borgmatic = {
       enable = true;
       sopsFile = ../../secrets/servy.yaml;
