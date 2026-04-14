@@ -407,6 +407,10 @@
           name = "hemmelig";
           path = "/mnt/storage/containers/hemmelig/database/hemmelig.db";
         }
+        {
+          name = "vaultwarden";
+          path = "/mnt/storage/containers/vaultwarden/data/db.sqlite3";
+        }
       ];
 
       networks = [
@@ -638,6 +642,13 @@
       domain = "unifi.l.qudr.de";
       allowlistGroups = [ "julian" ];
       dbLocalhostPort = 27017;
+    };
+
+    vaultwarden = {
+      enable = true;
+      sopsFile = ../../secrets/servy.yaml;
+
+      domain = "vault.r.qudr.de";
     };
   };
 
