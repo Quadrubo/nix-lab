@@ -100,7 +100,8 @@ in
         "traefik.http.routers.onlyoffice-documentserver.entrypoints" = "websecure";
         "traefik.http.routers.onlyoffice-documentserver.tls.certresolver" = "myresolver";
         "traefik.http.routers.onlyoffice-documentserver.middlewares" = "onlyoffice-headers";
-        "traefik.http.middlewares.onlyoffice-headers.headers.customrequestheaders.X-Forwarded-Proto" = "https";
+        "traefik.http.middlewares.onlyoffice-headers.headers.customrequestheaders.X-Forwarded-Proto" =
+          "https";
       };
     };
 

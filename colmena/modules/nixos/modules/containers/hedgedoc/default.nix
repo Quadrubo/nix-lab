@@ -161,7 +161,9 @@ in
     };
 
     systemd.services."podman-hedgedoc-db".after = [ "podman-network-hedgedoc-container-user.service" ];
-    systemd.services."podman-hedgedoc-db".requires = [ "podman-network-hedgedoc-container-user.service" ];
+    systemd.services."podman-hedgedoc-db".requires = [
+      "podman-network-hedgedoc-container-user.service"
+    ];
 
     systemd.services."podman-hedgedoc".after = [
       "podman-network-hedgedoc-container-user.service"

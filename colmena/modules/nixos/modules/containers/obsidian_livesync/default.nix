@@ -95,9 +95,12 @@ in
         "traefik.http.routers.obsidian-livesync.tls" = "true";
         "traefik.http.routers.obsidian-livesync.middlewares" = "obsidiancors";
         "traefik.http.routers.obsidian-livesync.tls.certresolver" = "myresolver";
-        "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowmethods" = "GET,PUT,POST,HEAD,DELETE";
-        "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowheaders" = "accept,authorization,content-type,origin,referer";
-        "traefik.http.middlewares.obsidiancors.headers.accesscontrolalloworiginlist" = "app://obsidian.md,capacitor://localhost,http://localhost";
+        "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowmethods" =
+          "GET,PUT,POST,HEAD,DELETE";
+        "traefik.http.middlewares.obsidiancors.headers.accesscontrolallowheaders" =
+          "accept,authorization,content-type,origin,referer";
+        "traefik.http.middlewares.obsidiancors.headers.accesscontrolalloworiginlist" =
+          "app://obsidian.md,capacitor://localhost,http://localhost";
         "traefik.http.middlewares.obsidiancors.headers.accesscontrolmaxage" = "3600";
         "traefik.http.middlewares.obsidiancors.headers.addvaryheader" = "true";
         "traefik.http.middlewares.obsidiancors.headers.accessControlAllowCredentials" = "true";

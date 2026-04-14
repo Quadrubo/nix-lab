@@ -179,7 +179,10 @@ in
       ];
 
       entrypoint = "sh";
-      cmd = [ "-c" "valkey-server --requirepass \"$REDIS_PASSWORD\"" ];
+      cmd = [
+        "-c"
+        "valkey-server --requirepass \"$REDIS_PASSWORD\""
+      ];
 
       environmentFiles = [ config.sops.secrets."open-archiver-valkey_env".path ];
 
@@ -267,14 +270,26 @@ in
         };
     };
 
-    systemd.services."podman-open-archiver-db".after = [ "podman-network-open-archiver-container-user.service" ];
-    systemd.services."podman-open-archiver-db".requires = [ "podman-network-open-archiver-container-user.service" ];
+    systemd.services."podman-open-archiver-db".after = [
+      "podman-network-open-archiver-container-user.service"
+    ];
+    systemd.services."podman-open-archiver-db".requires = [
+      "podman-network-open-archiver-container-user.service"
+    ];
 
-    systemd.services."podman-open-archiver-valkey".after = [ "podman-network-open-archiver-container-user.service" ];
-    systemd.services."podman-open-archiver-valkey".requires = [ "podman-network-open-archiver-container-user.service" ];
+    systemd.services."podman-open-archiver-valkey".after = [
+      "podman-network-open-archiver-container-user.service"
+    ];
+    systemd.services."podman-open-archiver-valkey".requires = [
+      "podman-network-open-archiver-container-user.service"
+    ];
 
-    systemd.services."podman-open-archiver-meilisearch".after = [ "podman-network-open-archiver-container-user.service" ];
-    systemd.services."podman-open-archiver-meilisearch".requires = [ "podman-network-open-archiver-container-user.service" ];
+    systemd.services."podman-open-archiver-meilisearch".after = [
+      "podman-network-open-archiver-container-user.service"
+    ];
+    systemd.services."podman-open-archiver-meilisearch".requires = [
+      "podman-network-open-archiver-container-user.service"
+    ];
 
     systemd.services."podman-open-archiver".after = [
       "podman-network-open-archiver-container-user.service"

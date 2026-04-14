@@ -49,7 +49,10 @@ in
     ];
 
     networking.firewall.allowedTCPPorts = [ 22000 ];
-    networking.firewall.allowedUDPPorts = [ 22000 21027 ];
+    networking.firewall.allowedUDPPorts = [
+      22000
+      21027
+    ];
 
     virtualisation.oci-containers.containers.syncthing = {
       image = cfg.image;
@@ -87,6 +90,8 @@ in
     };
 
     systemd.services."podman-syncthing".after = [ "podman-network-syncthing-container-user.service" ];
-    systemd.services."podman-syncthing".requires = [ "podman-network-syncthing-container-user.service" ];
+    systemd.services."podman-syncthing".requires = [
+      "podman-network-syncthing-container-user.service"
+    ];
   };
 }

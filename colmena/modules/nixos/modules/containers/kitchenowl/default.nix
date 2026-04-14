@@ -178,8 +178,12 @@ in
       };
     };
 
-    systemd.services."podman-kitchenowl-db".after = [ "podman-network-kitchenowl-container-user.service" ];
-    systemd.services."podman-kitchenowl-db".requires = [ "podman-network-kitchenowl-container-user.service" ];
+    systemd.services."podman-kitchenowl-db".after = [
+      "podman-network-kitchenowl-container-user.service"
+    ];
+    systemd.services."podman-kitchenowl-db".requires = [
+      "podman-network-kitchenowl-container-user.service"
+    ];
 
     systemd.services."podman-kitchenowl-backend".after = [
       "podman-network-kitchenowl-container-user.service"

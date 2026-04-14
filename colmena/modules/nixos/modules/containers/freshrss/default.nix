@@ -144,7 +144,9 @@ in
     };
 
     systemd.services."podman-freshrss-db".after = [ "podman-network-freshrss-container-user.service" ];
-    systemd.services."podman-freshrss-db".requires = [ "podman-network-freshrss-container-user.service" ];
+    systemd.services."podman-freshrss-db".requires = [
+      "podman-network-freshrss-container-user.service"
+    ];
 
     systemd.services."podman-freshrss".after = [
       "podman-network-freshrss-container-user.service"
