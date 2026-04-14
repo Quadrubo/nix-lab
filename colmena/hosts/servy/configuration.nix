@@ -119,6 +119,21 @@
     owner = "container-user";
   };
 
+  # Restricted SFTP access
+  myServices.sftp = {
+    enable = true;
+    accounts = [
+      {
+        name = "opnsense";
+        user = "opnsense-backup";
+        chrootDirectory = "/mnt/storage/backups/opnsense";
+        authorizedKeys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICNJPNqC0Gpnv2jPplIxNQ2iYI/QpC1cT1IsYAwevaev root@opnsense"
+        ];
+      }
+    ];
+  };
+
   # Containers
   myServices = {
     podman = {
