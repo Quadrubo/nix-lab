@@ -15,12 +15,26 @@ let
       entryPoints = {
         web = {
           address = ":80";
+          proxyProtocol.trustedIPs = [
+            "127.0.0.0/8"
+            "10.0.0.0/8"
+            "172.16.0.0/12"
+            "192.168.0.0/16"
+          ];
           http.redirections.entryPoint = {
             to = "websecure";
             scheme = "https";
           };
         };
-        websecure.address = ":443";
+        websecure = {
+          address = ":443";
+          proxyProtocol.trustedIPs = [
+            "127.0.0.0/8"
+            "10.0.0.0/8"
+            "172.16.0.0/12"
+            "192.168.0.0/16"
+          ];
+        };
       };
 
       providers = {
@@ -142,6 +156,29 @@ in
         default = { };
         description = "Additional Traefik serversTransports configuration.";
       };
+
+      allowlistGroups = mkOption {
+        type = types.attrsOf (types.listOf types.str);
+        default = { };
+        description = ''
+          Named IP groups (per user/device) used to build per-service allowlists.
+          Each key is an atomic group name (e.g. "julian", "lara", "chromecasts").
+          Services reference one or more of these groups; their IP lists are
+          concatenated at evaluation time and injected as Docker ipAllowList labels.
+        '';
+        example = lib.literalExpression ''
+          {
+            julian = [
+              "192.168.20.10/32"
+              "192.168.50.3/32"
+            ];
+            lara = [
+              "192.168.20.20/32"
+              "192.168.50.5/32"
+            ];
+          }
+        '';
+      };
     };
   };
 
@@ -184,10 +221,11 @@ in
       };
 
       ports = [
-        "80:80"
-        "443:443"
+        # HAProxy forwards 80/443 with PROXY protocol to these ports
+        "127.0.0.1:8080:80"
+        "127.0.0.1:8443:443"
         # Dashboard only accessible via SSH Tunnel
-        "127.0.0.1:8080:8080"
+        "127.0.0.1:8180:8080"
       ];
 
       volumes = [
@@ -214,5 +252,32 @@ in
       80
       443
     ];
+
+    # HAProxy is necessary to preserve the real client IP for the Traefik
+    # allowlist to work with rootless Podman.
+    services.haproxy = {
+      enable = true;
+      config = ''
+        defaults
+          mode tcp
+          timeout connect 5s
+          timeout client 1h
+          timeout server 1h
+
+        frontend http
+          bind :80
+          default_backend traefik_http
+
+        frontend https
+          bind :443
+          default_backend traefik_https
+
+        backend traefik_http
+          server traefik 127.0.0.1:8080 send-proxy-v2
+
+        backend traefik_https
+          server traefik 127.0.0.1:8443 send-proxy-v2
+      '';
+    };
   };
 }

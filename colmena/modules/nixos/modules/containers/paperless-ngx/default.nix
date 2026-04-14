@@ -114,6 +114,12 @@ let
         };
       };
 
+      allowlistGroups = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
+      };
+
       gpg = {
         enable = mkOption {
           type = types.bool;
@@ -247,16 +253,23 @@ let
           "${prefix}-redis"
         ];
 
-        # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-        # Previously used labels (do not enable yet):
-        # "traefik.http.middlewares.${prefix}-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-        # "traefik.http.routers.${prefix}.middlewares" = "${prefix}-ipallowlist@docker";
-        labels = {
-          "traefik.enable" = "true";
-          "traefik.http.routers.${prefix}.rule" = "Host(`${instanceCfg.domain}`)";
-          "traefik.http.routers.${prefix}.entrypoints" = "websecure";
-          "traefik.http.routers.${prefix}.tls.certresolver" = "myresolver";
-        };
+        labels =
+          let
+            allowlistIps = lib.concatMap (
+              g: config.myServices.traefik.allowlistGroups.${g}
+            ) instanceCfg.allowlistGroups;
+          in
+          {
+            "traefik.enable" = "true";
+            "traefik.http.routers.${prefix}.rule" = "Host(`${instanceCfg.domain}`)";
+            "traefik.http.routers.${prefix}.entrypoints" = "websecure";
+            "traefik.http.routers.${prefix}.tls.certresolver" = "myresolver";
+          }
+          // lib.optionalAttrs (allowlistIps != [ ]) {
+            "traefik.http.middlewares.${prefix}-allowlist.ipallowlist.sourcerange" =
+              lib.concatStringsSep "," allowlistIps;
+            "traefik.http.routers.${prefix}.middlewares" = "${prefix}-allowlist@docker";
+          };
       };
     }
     // optionalAttrs instanceCfg.scanTo.enable {

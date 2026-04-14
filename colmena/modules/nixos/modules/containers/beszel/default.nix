@@ -28,6 +28,12 @@ in
       default = "/mnt/storage/containers/beszel/beszel_data";
       description = "Path to store Beszel data.";
     };
+
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -57,16 +63,23 @@ in
         "${cfg.dataPath}:/beszel_data"
       ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.beszel-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.beszel.middlewares" = "beszel-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.beszel.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.beszel.entrypoints" = "websecure";
-        "traefik.http.routers.beszel.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.beszel.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.beszel.entrypoints" = "websecure";
+          "traefik.http.routers.beszel.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.beszel-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.beszel.middlewares" = "beszel-allowlist@docker";
+        };
     };
 
     systemd.services."podman-beszel".after = [ "podman-network-beszel-container-user.service" ];

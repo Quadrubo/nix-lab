@@ -36,6 +36,12 @@ in
       description = "Domain used for UniFi Network Application.";
     };
 
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
+    };
+
     timeZone = mkOption {
       type = types.str;
       default = "Etc/UTC";
@@ -170,20 +176,27 @@ in
 
       dependsOn = [ "unifi-db" ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.unifi-network-application-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.unifi-network-application.middlewares" = "unifi-network-application-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.unifi-network-application.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.unifi-network-application.entrypoints" = "websecure";
-        "traefik.http.routers.unifi-network-application.tls.certresolver" = "myresolver";
-        "traefik.http.services.unifi-network-application.loadbalancer.server.port" = "8443";
-        "traefik.http.services.unifi-network-application.loadbalancer.server.scheme" = "https";
-        "traefik.http.services.unifi-network-application.loadbalancer.serverstransport" = "unifi-network-application@file";
-        "traefik.http.routers.unifi-network-application.service" = "unifi-network-application";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.unifi-network-application.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.unifi-network-application.entrypoints" = "websecure";
+          "traefik.http.routers.unifi-network-application.tls.certresolver" = "myresolver";
+          "traefik.http.services.unifi-network-application.loadbalancer.server.port" = "8443";
+          "traefik.http.services.unifi-network-application.loadbalancer.server.scheme" = "https";
+          "traefik.http.services.unifi-network-application.loadbalancer.serverstransport" = "unifi-network-application@file";
+          "traefik.http.routers.unifi-network-application.service" = "unifi-network-application";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.unifi-network-application-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.unifi-network-application.middlewares" = "unifi-network-application-allowlist@docker";
+        };
     };
 
     systemd.services."podman-unifi-db".after = [ "podman-network-unifi-network-application-container-user.service" ];

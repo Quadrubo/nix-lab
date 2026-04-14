@@ -135,6 +135,55 @@
 
         sopsFile = ../../secrets/home.yaml;
       };
+
+      allowlistGroups = {
+        servy = [
+          "192.168.10.10/32" # DMZ - Servy
+          "172.17.0.0/12" # Docker
+          "192.168.0.0/16" # Docker
+        ];
+
+        julian = [
+          "192.168.20.10/32" # USER - Framy
+          "192.168.50.3/32" # WG   - Framy
+          "192.168.20.11/32" # USER - Phony
+          "192.168.50.2/32" # WG   - Phony
+          "192.168.20.12/32" # USER - Compy
+          "192.168.20.13/32" # USER - Worky
+          "192.168.50.4/32" # WG   - Worky
+        ];
+
+        lara = [
+          "192.168.20.20/32" # USER - Lara iPhone
+          "192.168.50.5/32" # WG   - Lara iPhone
+          "192.168.20.21/32" # USER - Lara iPad
+          "192.168.50.6/32" # WG   - Lara iPad
+          "192.168.20.22/32" # USER - Lara Laptop
+          "192.168.50.7/32" # WG   - Lara Laptop
+        ];
+
+        fabi = [
+          "192.168.50.10/32" # WG - Fabi PC
+        ];
+
+        papa = [
+          "192.168.50.11/32" # WG - Papa Handy
+        ];
+
+        mama = [
+          "192.168.50.12/32" # WG - Mama Handy
+        ];
+
+        chromecasts = [
+          "192.168.30.11/32" # IOT - Dachgeschoss (Chromecast Wohnzimmer)
+          "192.168.30.12/32" # IOT - Kaufhof (Chromecast Schlafzimmer)
+        ];
+
+        larac = [
+          "192.168.50.8/32" # WG  - Lara C. iPhone
+          "192.168.50.9/32" # WG  - Lara C. iPad
+        ];
+      };
     };
 
     actual-server.instances = {
@@ -142,12 +191,17 @@
         enable = true;
 
         domain = "actual.l.qudr.de";
+        allowlistGroups = [ "julian" ];
       };
 
       family = {
         enable = true;
 
         domain = "actual-g.l.qudr.de";
+        allowlistGroups = [
+          "julian"
+          "lara"
+        ];
       };
     };
 
@@ -155,6 +209,10 @@
       enable = true;
 
       domain = "beszel.l.qudr.de";
+      allowlistGroups = [
+        "servy"
+        "julian"
+      ];
     };
 
     beszel-agent = {
@@ -246,6 +304,7 @@
       enable = true;
 
       domain = "chartdb.l.qudr.de";
+      allowlistGroups = [ "julian" ];
     };
 
     crowdsec = {
@@ -264,6 +323,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "dawarich.l.qudr.de";
+      allowlistGroups = [ "julian" ];
     };
 
     freshrss = {
@@ -271,6 +331,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "freshrss.l.qudr.de";
+      allowlistGroups = [ "julian" ];
     };
 
     gitea = {
@@ -278,6 +339,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "gitea.l.qudr.de";
+      allowlistGroups = [ "julian" ];
       dbLocalhostPort = 3307;
     };
 
@@ -286,6 +348,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "hedgedoc.r.qudr.de";
+      allowlistGroups = [
+        "julian"
+        "lara"
+      ];
     };
 
     hemmelig = {
@@ -345,6 +411,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "open-archiver.l.qudr.de";
+      allowlistGroups = [ "julian" ];
     };
 
     paperless-ngx.instances = {
@@ -354,6 +421,10 @@
 
         domain = "paperless.l.qudr.de";
         appTitle = "Paperless (Gemeinsam)";
+        allowlistGroups = [
+          "julian"
+          "lara"
+        ];
 
         scanTo = {
           ip = "192.168.30.10";
@@ -371,6 +442,7 @@
 
         domain = "paperless-j.l.qudr.de";
         appTitle = "Paperless (Julian)";
+        allowlistGroups = [ "julian" ];
 
         scanTo = {
           ip = "192.168.30.10";
@@ -388,6 +460,7 @@
 
         domain = "paperless-l.l.qudr.de";
         appTitle = "Paperless (Lara)";
+        allowlistGroups = [ "lara" ];
 
         scanTo = {
           ip = "192.168.30.10";
@@ -426,6 +499,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "speedtest.l.qudr.de";
+      allowlistGroups = [ "julian" ];
       dbLocalhostPort = 3309;
     };
 
@@ -447,6 +521,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "traggo.l.qudr.de";
+      allowlistGroups = [ "julian" ];
     };
 
     unifi-network-application = {
@@ -454,6 +529,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "unifi.l.qudr.de";
+      allowlistGroups = [ "julian" ];
     };
   };
 

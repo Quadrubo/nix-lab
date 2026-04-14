@@ -32,6 +32,12 @@ in
       type = types.str;
       description = "Domain used for HedgeDoc.";
     };
+
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -127,16 +133,23 @@ in
 
       dependsOn = [ "hedgedoc-db" ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.hedgedoc-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.hedgedoc.middlewares" = "hedgedoc-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.hedgedoc.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.hedgedoc.entrypoints" = "websecure";
-        "traefik.http.routers.hedgedoc.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.hedgedoc.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.hedgedoc.entrypoints" = "websecure";
+          "traefik.http.routers.hedgedoc.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.hedgedoc-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.hedgedoc.middlewares" = "hedgedoc-allowlist@docker";
+        };
     };
 
     systemd.services."podman-hedgedoc-db".after = [ "podman-network-hedgedoc-container-user.service" ];

@@ -68,6 +68,12 @@ in
       default = "4g";
       description = "Memory limit for the app container.";
     };
+
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -217,16 +223,23 @@ in
         "dawarich-redis"
       ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.dawarich-app-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.dawarich-app.middlewares" = "dawarich-app-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.dawarich-app.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.dawarich-app.entrypoints" = "websecure";
-        "traefik.http.routers.dawarich-app.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.dawarich-app.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.dawarich-app.entrypoints" = "websecure";
+          "traefik.http.routers.dawarich-app.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.dawarich-app-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.dawarich-app.middlewares" = "dawarich-app-allowlist@docker";
+        };
     };
 
     # Sidekiq
@@ -271,11 +284,17 @@ in
       ];
     };
 
-    systemd.services."podman-dawarich-redis".after = [ "podman-network-dawarich-container-user.service" ];
-    systemd.services."podman-dawarich-redis".requires = [ "podman-network-dawarich-container-user.service" ];
+    systemd.services."podman-dawarich-redis".after = [
+      "podman-network-dawarich-container-user.service"
+    ];
+    systemd.services."podman-dawarich-redis".requires = [
+      "podman-network-dawarich-container-user.service"
+    ];
 
     systemd.services."podman-dawarich-db".after = [ "podman-network-dawarich-container-user.service" ];
-    systemd.services."podman-dawarich-db".requires = [ "podman-network-dawarich-container-user.service" ];
+    systemd.services."podman-dawarich-db".requires = [
+      "podman-network-dawarich-container-user.service"
+    ];
 
     systemd.services."podman-dawarich-app".after = [
       "podman-network-dawarich-container-user.service"

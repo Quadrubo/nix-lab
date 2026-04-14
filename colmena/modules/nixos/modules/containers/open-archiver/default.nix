@@ -23,6 +23,12 @@ in
       description = "Domain used for Open Archiver.";
     };
 
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
+    };
+
     appImage = mkOption {
       type = types.str;
       default = "logiclabshq/open-archiver:v0.4.2"; # renovate: docker
@@ -234,16 +240,23 @@ in
         "open-archiver-meilisearch"
       ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.open-archiver-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.open-archiver.middlewares" = "open-archiver-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.open-archiver.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.open-archiver.entrypoints" = "websecure";
-        "traefik.http.routers.open-archiver.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.open-archiver.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.open-archiver.entrypoints" = "websecure";
+          "traefik.http.routers.open-archiver.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.open-archiver-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.open-archiver.middlewares" = "open-archiver-allowlist@docker";
+        };
     };
 
     systemd.services."podman-open-archiver-db".after = [ "podman-network-open-archiver-container-user.service" ];

@@ -31,6 +31,12 @@ let
           default = "/mnt/storage/containers/actual-server-${name}/data";
           description = "Path to store data in.";
         };
+
+        allowlistGroups = mkOption {
+          type = types.listOf types.str;
+          default = [ ];
+          description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+        };
       };
     };
 
@@ -84,16 +90,23 @@ in
           "${instanceCfg.dataPath}:/data"
         ];
 
-        labels = {
-          "traefik.enable" = "true";
-          # TODO: get ipallowlist working
-          # "traefik.http.middlewares.actual-server-${name}-ipallowlist.ipallowlist.sourcerange" =
-          #   "{{ (traefik_julian_ips) | join(',') }}";
-          # "traefik.http.routers.actual-server-${name}.middlewares" = "actual-server-${name}-ipallowlist@docker";
-          "traefik.http.routers.actual-server-${name}.rule" = "Host(`${instanceCfg.domain}`)";
-          "traefik.http.routers.actual-server-${name}.entrypoints" = "websecure";
-          "traefik.http.routers.actual-server-${name}.tls.certresolver" = "myresolver";
-        };
+        labels =
+          let
+            allowlistIps = lib.concatMap (
+              g: config.myServices.traefik.allowlistGroups.${g}
+            ) instanceCfg.allowlistGroups;
+          in
+          {
+            "traefik.enable" = "true";
+            "traefik.http.routers.actual-server-${name}.rule" = "Host(`${instanceCfg.domain}`)";
+            "traefik.http.routers.actual-server-${name}.entrypoints" = "websecure";
+            "traefik.http.routers.actual-server-${name}.tls.certresolver" = "myresolver";
+          }
+          // lib.optionalAttrs (allowlistIps != [ ]) {
+            "traefik.http.middlewares.actual-server-${name}-allowlist.ipallowlist.sourcerange" =
+              lib.concatStringsSep "," allowlistIps;
+            "traefik.http.routers.actual-server-${name}.middlewares" = "actual-server-${name}-allowlist@docker";
+          };
       }
     ) enabledInstances;
 

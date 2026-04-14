@@ -33,6 +33,12 @@ in
       default = "/mnt/storage/containers/traggo/data";
       description = "Path to store Traggo data.";
     };
+
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -74,16 +80,23 @@ in
         "${cfg.dataPath}:/opt/traggo/data"
       ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.traggo-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.traggo.middlewares" = "traggo-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.traggo.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.traggo.entrypoints" = "websecure";
-        "traefik.http.routers.traggo.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.traggo.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.traggo.entrypoints" = "websecure";
+          "traefik.http.routers.traggo.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.traggo-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.traggo.middlewares" = "traggo-allowlist@docker";
+        };
     };
 
     systemd.services."podman-traggo".after = [ "podman-network-traggo-container-user.service" ];

@@ -61,6 +61,12 @@ in
       default = null;
       description = "When set, publish the DB port to this loopback port on the host.";
     };
+
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -152,16 +158,23 @@ in
 
       dependsOn = [ "speedtest-tracker-db" ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.speedtest-tracker-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.speedtest-tracker.middlewares" = "speedtest-tracker-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.speedtest-tracker.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.speedtest-tracker.entrypoints" = "websecure";
-        "traefik.http.routers.speedtest-tracker.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.speedtest-tracker.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.speedtest-tracker.entrypoints" = "websecure";
+          "traefik.http.routers.speedtest-tracker.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.speedtest-tracker-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.speedtest-tracker.middlewares" = "speedtest-tracker-allowlist@docker";
+        };
     };
 
     systemd.services."podman-speedtest-tracker-db".after = [

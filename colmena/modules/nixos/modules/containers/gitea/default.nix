@@ -50,6 +50,12 @@ in
       default = "Europe/Berlin";
       description = "Timezone for the Gitea container.";
     };
+
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -147,17 +153,24 @@ in
 
       dependsOn = [ "gitea-db" ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.gitea-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.gitea.middlewares" = "gitea-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.gitea.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.gitea.entrypoints" = "websecure";
-        "traefik.http.routers.gitea.tls.certresolver" = "myresolver";
-        "traefik.http.services.gitea.loadbalancer.server.port" = "3000";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.gitea.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.gitea.entrypoints" = "websecure";
+          "traefik.http.routers.gitea.tls.certresolver" = "myresolver";
+          "traefik.http.services.gitea.loadbalancer.server.port" = "3000";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.gitea-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.gitea.middlewares" = "gitea-allowlist@docker";
+        };
     };
 
     systemd.services."podman-gitea-db".after = [ "podman-network-gitea-container-user.service" ];

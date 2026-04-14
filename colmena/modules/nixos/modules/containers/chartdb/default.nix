@@ -22,6 +22,12 @@ in
       type = types.str;
       description = "Domain used for ChartDB.";
     };
+
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -51,12 +57,23 @@ in
         "--health-start-period=20s"
       ];
 
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.chartdb.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.chartdb.entrypoints" = "websecure";
-        "traefik.http.routers.chartdb.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.chartdb.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.chartdb.entrypoints" = "websecure";
+          "traefik.http.routers.chartdb.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.chartdb-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.chartdb.middlewares" = "chartdb-allowlist@docker";
+        };
     };
 
     systemd.services."podman-chartdb".after = [ "podman-network-chartdb-container-user.service" ];

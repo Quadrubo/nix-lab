@@ -33,6 +33,12 @@ in
       description = "Domain used for FreshRSS.";
     };
 
+    allowlistGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ ];
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
+    };
+
     timeZone = mkOption {
       type = types.str;
       default = "Europe/Berlin";
@@ -110,16 +116,23 @@ in
 
       dependsOn = [ "freshrss-db" ];
 
-      # TODO: migrate Traefik ip allowlist/denylist handling when ready.
-      # Previously used labels (do not enable yet):
-      # "traefik.http.middlewares.freshrss-ipallowlist.ipallowlist.sourcerange" = "<comma-separated-ips>";
-      # "traefik.http.routers.freshrss.middlewares" = "freshrss-ipallowlist@docker";
-      labels = {
-        "traefik.enable" = "true";
-        "traefik.http.routers.freshrss.rule" = "Host(`${cfg.domain}`)";
-        "traefik.http.routers.freshrss.entrypoints" = "websecure";
-        "traefik.http.routers.freshrss.tls.certresolver" = "myresolver";
-      };
+      labels =
+        let
+          allowlistIps = lib.concatMap (
+            g: config.myServices.traefik.allowlistGroups.${g}
+          ) cfg.allowlistGroups;
+        in
+        {
+          "traefik.enable" = "true";
+          "traefik.http.routers.freshrss.rule" = "Host(`${cfg.domain}`)";
+          "traefik.http.routers.freshrss.entrypoints" = "websecure";
+          "traefik.http.routers.freshrss.tls.certresolver" = "myresolver";
+        }
+        // lib.optionalAttrs (allowlistIps != [ ]) {
+          "traefik.http.middlewares.freshrss-allowlist.ipallowlist.sourcerange" =
+            lib.concatStringsSep "," allowlistIps;
+          "traefik.http.routers.freshrss.middlewares" = "freshrss-allowlist@docker";
+        };
     };
 
     systemd.services."podman-freshrss-db".after = [ "podman-network-freshrss-container-user.service" ];
