@@ -56,5 +56,14 @@ in
     };
 
     networking.firewall.enable = true;
+
+    systemd.services.crowdsec-firewall-bouncer = {
+      after = [ "podman-crowdsec.service" ];
+      wants = [ "podman-crowdsec.service" ];
+      serviceConfig = {
+        Restart = "on-failure";
+        RestartSec = "5s";
+      };
+    };
   };
 }
