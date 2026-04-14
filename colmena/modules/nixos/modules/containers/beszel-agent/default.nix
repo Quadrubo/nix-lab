@@ -109,9 +109,7 @@ in
         ++ map (device: "--device=${device}") cfg.devices
       );
 
-      # TODO: also check if nvme are working, it could be necessary to mount those differently
-      # it seems like they currently don't update.
-
+      # NVMe SMART requires controller paths (/dev/nvme0), not namespace paths (/dev/nvme0n1)
       podman = {
         # TODO: create issue that S.M.A.R.T. monitoring requires running as root
         user = if hasDevices then "root" else "container-user";

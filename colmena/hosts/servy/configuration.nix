@@ -234,8 +234,8 @@
         "/dev/sdb"
         "/dev/sdc"
         "/dev/sdd"
-        "/dev/nvme0n1"
-        "/dev/nvme1n1"
+        "/dev/nvme0"
+        "/dev/nvme1"
       ];
     };
 
@@ -568,22 +568,6 @@
 
       panelDomain = "pelican-panel.l.qudr.de";
       wingsDomain = "pelican-wings.l.qudr.de";
-    };
-
-    # TODO: remove, beszel replaces it
-    scrutiny = {
-      enable = false;
-
-      domain = "scrutiny.l.qudr.de";
-
-      devices = [
-        "/dev/sda"
-        "/dev/sdb"
-        "/dev/sdc"
-        "/dev/sdd"
-        "/dev/nvme0n1"
-        "/dev/nvme1n1"
-      ];
     };
 
     speedtest-tracker = {
