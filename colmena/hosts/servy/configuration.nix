@@ -295,6 +295,90 @@
         }
       ];
 
+      postgresqlDatabases = [
+        {
+          name = "paperless";
+          hostname = "127.0.0.1";
+          port = 5433;
+          username = "paperless";
+          password = "\${PAPERLESS_FAMILY_DB_PASSWORD}";
+        }
+        {
+          name = "paperless";
+          hostname = "127.0.0.1";
+          port = 5434;
+          username = "paperless";
+          password = "\${PAPERLESS_JULIAN_DB_PASSWORD}";
+        }
+        {
+          name = "paperless";
+          hostname = "127.0.0.1";
+          port = 5435;
+          username = "paperless";
+          password = "\${PAPERLESS_LARA_DB_PASSWORD}";
+        }
+        {
+          name = "hedgedoc";
+          hostname = "127.0.0.1";
+          port = 5436;
+          username = "hedgedoc";
+          password = "\${HEDGEDOC_DB_PASSWORD}";
+        }
+        {
+          name = "freshrss";
+          hostname = "127.0.0.1";
+          port = 5437;
+          username = "freshrss";
+          password = "\${FRESHRSS_DB_PASSWORD}";
+        }
+        {
+          name = "immich";
+          hostname = "127.0.0.1";
+          port = 5438;
+          username = "postgres";
+          password = "\${IMMICH_DB_PASSWORD}";
+        }
+        {
+          name = "spliit";
+          hostname = "127.0.0.1";
+          port = 5439;
+          username = "spliit";
+          password = "\${SPLIIT_DB_PASSWORD}";
+        }
+        {
+          name = "open_archive";
+          hostname = "127.0.0.1";
+          port = 5440;
+          username = "admin";
+          password = "\${OPEN_ARCHIVER_DB_PASSWORD}";
+        }
+        {
+          name = "kitchenowl";
+          hostname = "127.0.0.1";
+          port = 5441;
+          username = "kitchenowl";
+          password = "\${KITCHENOWL_DB_PASSWORD}";
+        }
+      ];
+
+      mongodbDatabases = [
+        {
+          name = "unifi";
+          hostname = "127.0.0.1";
+          port = 27017;
+          username = "unifi";
+          password = "\${UNIFI_MONGO_PASSWORD}";
+          authentication_database = "admin";
+        }
+      ];
+
+      sqliteDatabases = [
+        {
+          name = "hemmelig";
+          path = "/mnt/storage/containers/hemmelig/database/hemmelig.db";
+        }
+      ];
+
       networks = [
         { name = "borgmatic"; }
       ];
@@ -332,6 +416,7 @@
 
       domain = "freshrss.l.qudr.de";
       allowlistGroups = [ "julian" ];
+      dbLocalhostPort = 5437;
     };
 
     gitea = {
@@ -352,6 +437,7 @@
         "julian"
         "lara"
       ];
+      dbLocalhostPort = 5436;
     };
 
     hemmelig = {
@@ -366,6 +452,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "immich.r.qudr.de";
+      dbLocalhostPort = 5438;
     };
 
     kitchenowl = {
@@ -373,6 +460,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "kitchenowl.r.qudr.de";
+      dbLocalhostPort = 5441;
     };
 
     nextcloud = {
@@ -412,6 +500,7 @@
 
       domain = "open-archiver.l.qudr.de";
       allowlistGroups = [ "julian" ];
+      dbLocalhostPort = 5440;
     };
 
     paperless-ngx.instances = {
@@ -421,6 +510,7 @@
 
         domain = "paperless.l.qudr.de";
         appTitle = "Paperless (Gemeinsam)";
+        dbLocalhostPort = 5433;
         allowlistGroups = [
           "julian"
           "lara"
@@ -442,6 +532,7 @@
 
         domain = "paperless-j.l.qudr.de";
         appTitle = "Paperless (Julian)";
+        dbLocalhostPort = 5434;
         allowlistGroups = [ "julian" ];
 
         scanTo = {
@@ -460,6 +551,7 @@
 
         domain = "paperless-l.l.qudr.de";
         appTitle = "Paperless (Lara)";
+        dbLocalhostPort = 5435;
         allowlistGroups = [ "lara" ];
 
         scanTo = {
@@ -508,6 +600,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "spliit.r.qudr.de";
+      dbLocalhostPort = 5439;
     };
 
     syncthing = {
@@ -530,6 +623,7 @@
 
       domain = "unifi.l.qudr.de";
       allowlistGroups = [ "julian" ];
+      dbLocalhostPort = 27017;
     };
   };
 

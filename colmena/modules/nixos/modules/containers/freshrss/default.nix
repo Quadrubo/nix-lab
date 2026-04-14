@@ -33,6 +33,12 @@ in
       description = "Domain used for FreshRSS.";
     };
 
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
+
     allowlistGroups = mkOption {
       type = types.listOf types.str;
       default = [ ];
@@ -80,6 +86,8 @@ in
       extraOptions = [
         "--network=freshrss"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:5432";
 
       environment = {
         POSTGRES_DB = "freshrss";

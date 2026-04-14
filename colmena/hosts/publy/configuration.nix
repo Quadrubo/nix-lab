@@ -116,6 +116,7 @@
     umami = {
       enable = true;
       sopsFile = ../../secrets/publy.yaml;
+      dbLocalhostPort = 5432;
     };
 
     borgmatic = {
@@ -146,6 +147,16 @@
           username = "julweb";
           password = "\${JULWEB_DB_PASSWORD}";
           options = "--skip-ssl";
+        }
+      ];
+
+      postgresqlDatabases = [
+        {
+          name = "umami";
+          hostname = "127.0.0.1";
+          port = 5432;
+          username = "umami";
+          password = "\${UMAMI_DB_PASSWORD}";
         }
       ];
 

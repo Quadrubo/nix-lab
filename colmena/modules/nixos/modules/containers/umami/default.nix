@@ -33,6 +33,12 @@ in
       type = types.str;
       default = "postgres:15-alpine"; # renovate: docker
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -82,6 +88,8 @@ in
         "--health-retries=5"
         "--health-timeout=5s"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:5432";
 
       podman.user = "container-user";
 

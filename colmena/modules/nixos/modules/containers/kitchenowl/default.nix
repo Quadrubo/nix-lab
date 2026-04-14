@@ -49,6 +49,12 @@ in
       default = "/mnt/storage/containers/kitchenowl-db/data";
       description = "Path to store KitchenOwl database data.";
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -103,6 +109,8 @@ in
         "--health-retries=5"
         "--health-start-period=80s"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:5432";
 
       environment = {
         POSTGRES_DB = "kitchenowl";

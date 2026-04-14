@@ -114,6 +114,12 @@ let
         };
       };
 
+      dbLocalhostPort = mkOption {
+        type = types.nullOr types.port;
+        default = null;
+        description = "When set, publish the DB port to this loopback port on the host.";
+      };
+
       allowlistGroups = mkOption {
         type = types.listOf types.str;
         default = [ ];
@@ -186,6 +192,8 @@ let
         extraOptions = [
           "--network=${prefix}"
         ];
+
+        ports = optional (instanceCfg.dbLocalhostPort != null) "127.0.0.1:${toString instanceCfg.dbLocalhostPort}:5432";
 
         environment = {
           POSTGRES_DB = "paperless";

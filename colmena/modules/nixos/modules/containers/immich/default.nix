@@ -72,6 +72,12 @@ in
       default = "Europe/Berlin";
       description = "Timezone for Immich containers.";
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -140,6 +146,8 @@ in
         "--network=immich"
         "--shm-size=128mb"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:5432";
 
       environment = {
         POSTGRES_USER = "postgres";

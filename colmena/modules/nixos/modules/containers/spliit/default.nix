@@ -43,6 +43,12 @@ in
       default = "/mnt/storage/containers/spliit-db/data";
       description = "Path to store Spliit database data.";
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -93,6 +99,8 @@ in
         "--health-timeout=5s"
         "--health-retries=10"
       ];
+
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:5432";
 
       environment = {
         TZ = cfg.timeZone;

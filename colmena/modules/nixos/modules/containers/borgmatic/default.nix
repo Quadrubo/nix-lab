@@ -18,6 +18,9 @@ let
     builtins.toJSON {
       source_directories = cfg.sourceDirectories;
       mariadb_databases = cfg.mariadbDatabases;
+      postgresql_databases = cfg.postgresqlDatabases;
+      mongodb_databases = cfg.mongodbDatabases;
+      sqlite_databases = cfg.sqliteDatabases;
       repositories = cfg.repositories;
 
       one_file_system = true;
@@ -120,6 +123,24 @@ in
       type = types.listOf types.attrs;
       default = [ ];
       description = "List of MariaDB databases to backup (name, hostname, username, password)";
+    };
+
+    postgresqlDatabases = mkOption {
+      type = types.listOf types.attrs;
+      default = [ ];
+      description = "List of PostgreSQL databases to backup (name, hostname, port, username, password)";
+    };
+
+    mongodbDatabases = mkOption {
+      type = types.listOf types.attrs;
+      default = [ ];
+      description = "List of MongoDB databases to backup (name, hostname, port, username, password, authentication_database)";
+    };
+
+    sqliteDatabases = mkOption {
+      type = types.listOf types.attrs;
+      default = [ ];
+      description = "List of SQLite databases to backup (name, path)";
     };
 
     sshCommand = mkOption {
