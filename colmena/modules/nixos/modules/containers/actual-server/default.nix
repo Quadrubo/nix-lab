@@ -35,7 +35,7 @@ let
         allowlistGroups = mkOption {
           type = types.listOf types.str;
           default = [ ];
-          description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+          description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
         };
       };
     };
@@ -54,6 +54,12 @@ in
   };
 
   config = mkIf (enabledInstances != { }) {
+    myServices.monitoring.endpoints = mapAttrsToList (name: instanceCfg: {
+      name = "Actual Server (${name})";
+      group = "Servy - Internal";
+      url = "https://${instanceCfg.domain}";
+    }) enabledInstances;
+
     myServices.podman = {
       enable = true;
       networks = map (name: { name = "actual-server-${name}"; }) (attrNames enabledInstances);

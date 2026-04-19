@@ -554,6 +554,12 @@ in
   };
 
   config = mkIf (enabledInstances != { }) {
+    myServices.monitoring.endpoints = mapAttrsToList (name: instanceCfg: {
+      name = "Paperless-ngx (${name})";
+      group = "Servy - Internal";
+      url = "https://${instanceCfg.domain}";
+    }) enabledInstances;
+
     environment.systemPackages =
       mkIf (any (instanceCfg: instanceCfg.gpg.enable) (attrValues enabledInstances))
         [

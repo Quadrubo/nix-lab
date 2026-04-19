@@ -113,6 +113,26 @@
 
     traefik.enable = true;
 
+    gatus = {
+      enable = true;
+      sopsFile = ../../secrets/publy.yaml;
+
+      domain = "gatus.r.qudr.de";
+      dns = "192.168.10.11";
+      hostOverrides = [
+        "gatus.r.qudr.de"
+        "julweb.dev"
+        "analytics.julweb.dev"
+        "ntfy.r.qudr.de"
+      ];
+
+      alerting.ntfy = {
+        enable = true;
+        url = "https://ntfy.r.qudr.de";
+        topic = "gatus";
+      };
+    };
+
     julweb = {
       enable = true;
       sopsFile = ../../secrets/publy.yaml;
@@ -123,6 +143,12 @@
       enable = true;
       sopsFile = ../../secrets/publy.yaml;
       dbLocalhostPort = 5432;
+    };
+
+    ntfy = {
+      enable = true;
+
+      domain = "ntfy.r.qudr.de";
     };
 
     borgmatic = {
@@ -168,6 +194,26 @@
 
       networks = [
         { name = "borgmatic"; }
+      ];
+    };
+
+    wireguard = {
+      enable = true;
+      sopsFile = ../../secrets/publy.yaml;
+
+      # Server - listens for incoming connections from home servers
+      address = "192.168.60.1/24";
+      listenPort = 51820;
+
+      peers = [
+        {
+          # servy
+          publicKey = "caUJug8M+5300cNyg/4Tk6gWXLd6xcHV/449RAPO0XM=";
+          allowedIPs = [
+            "192.168.60.0/24"
+            "192.168.10.0/24"
+          ];
+        }
       ];
     };
 

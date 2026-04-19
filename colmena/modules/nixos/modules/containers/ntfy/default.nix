@@ -37,6 +37,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "ntfy";
+        group = "Publy - External";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [

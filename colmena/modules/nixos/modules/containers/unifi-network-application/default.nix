@@ -79,6 +79,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "Unifi Network Application";
+        group = "Servy - Internal";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.traefik.serversTransports = {
       unifi-network-application = {
         insecureSkipVerify = true;

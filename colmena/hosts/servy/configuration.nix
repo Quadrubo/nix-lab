@@ -203,6 +203,10 @@
           "192.168.50.8/32" # WG  - Lara C. iPhone
           "192.168.50.9/32" # WG  - Lara C. iPad
         ];
+
+        publy = [
+          "192.168.60.1/32" # WG - Publy (Gatus monitoring)
+        ];
       };
     };
 
@@ -211,7 +215,7 @@
         enable = true;
 
         domain = "actual.l.qudr.de";
-        allowlistGroups = [ "julian" ];
+        allowlistGroups = [ "julian" "publy" ];
       };
 
       family = {
@@ -221,6 +225,7 @@
         allowlistGroups = [
           "julian"
           "lara"
+          "publy"
         ];
       };
     };
@@ -232,6 +237,7 @@
       allowlistGroups = [
         "servy"
         "julian"
+        "publy"
       ];
     };
 
@@ -272,6 +278,7 @@
       allowlistGroups = [
         "julian"
         "lara"
+        "publy"
       ];
     };
 
@@ -422,7 +429,7 @@
       enable = true;
 
       domain = "chartdb.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
     };
 
     crowdsec = {
@@ -441,7 +448,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "dawarich.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
     };
 
     photon = {
@@ -455,7 +462,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "tracksync.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
     };
 
     freshrss = {
@@ -463,7 +470,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "freshrss.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
       dbLocalhostPort = 5437;
     };
 
@@ -472,7 +479,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "gitea.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
       dbLocalhostPort = 3307;
     };
 
@@ -516,12 +523,6 @@
       dbLocalhostPort = 3308;
     };
 
-    ntfy = {
-      enable = true;
-
-      domain = "ntfy.r.qudr.de";
-    };
-
     obsidian-livesync = {
       enable = true;
       sopsFile = ../../secrets/servy.yaml;
@@ -543,7 +544,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "open-archiver.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
       dbLocalhostPort = 5440;
     };
 
@@ -558,6 +559,7 @@
         allowlistGroups = [
           "julian"
           "lara"
+          "publy"
         ];
 
         scanTo = {
@@ -577,7 +579,7 @@
         domain = "paperless-j.l.qudr.de";
         appTitle = "Paperless (Julian)";
         dbLocalhostPort = 5434;
-        allowlistGroups = [ "julian" ];
+        allowlistGroups = [ "julian" "publy" ];
 
         scanTo = {
           ip = "192.168.30.10";
@@ -596,7 +598,7 @@
         domain = "paperless-l.l.qudr.de";
         appTitle = "Paperless (Lara)";
         dbLocalhostPort = 5435;
-        allowlistGroups = [ "lara" ];
+        allowlistGroups = [ "lara" "publy" ];
 
         scanTo = {
           ip = "192.168.30.10";
@@ -619,7 +621,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "speedtest.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
       dbLocalhostPort = 3309;
     };
 
@@ -642,7 +644,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "traggo.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
     };
 
     unifi-network-application = {
@@ -650,7 +652,7 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "unifi.l.qudr.de";
-      allowlistGroups = [ "julian" ];
+      allowlistGroups = [ "julian" "publy" ];
       dbLocalhostPort = 27017;
     };
 
@@ -659,6 +661,29 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "vault.r.qudr.de";
+    };
+
+    wireguard = {
+      enable = true;
+      sopsFile = ../../secrets/servy.yaml;
+
+      # Client - connects to publy
+      address = "192.168.60.2/24";
+
+      forward = {
+        enable = true;
+        externalInterface = "enp4s0";
+      };
+
+      peers = [
+        {
+          # publy
+          publicKey = "bQFWDrYEhyIXg/rn4EKv7OKvXL88X+bYbwMTrC3MWwE=";
+          allowedIPs = [ "192.168.60.0/24" ];
+          endpoint = "202.61.254.52:51820";
+          persistentKeepalive = 25;
+        }
+      ];
     };
   };
 

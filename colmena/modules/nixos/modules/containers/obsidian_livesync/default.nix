@@ -42,6 +42,15 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "Obsidian LiveSync";
+        group = "Servy - External";
+        url = "https://${cfg.domain}";
+        conditions = [ "[STATUS] == 401" ];
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [

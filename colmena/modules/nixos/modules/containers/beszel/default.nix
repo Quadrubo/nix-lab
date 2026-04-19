@@ -32,11 +32,19 @@ in
     allowlistGroups = mkOption {
       type = types.listOf types.str;
       default = [ ];
-      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware (e.g. [ \"julian\" \"lara\" ]). Groups are defined in myServices.traefik.allowlistGroups.";
+      description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
     };
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "Beszel";
+        group = "Servy - Internal";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [
