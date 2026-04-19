@@ -467,10 +467,6 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "hedgedoc.r.qudr.de";
-      allowlistGroups = [
-        "julian"
-        "lara"
-      ];
       dbLocalhostPort = 5436;
     };
 
