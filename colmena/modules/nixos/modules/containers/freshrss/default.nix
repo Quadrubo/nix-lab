@@ -52,6 +52,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "FreshRSS";
+        group = "Servy - Internal";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [
@@ -144,7 +152,9 @@ in
     };
 
     systemd.services."podman-freshrss-db".after = [ "podman-network-freshrss-container-user.service" ];
-    systemd.services."podman-freshrss-db".requires = [ "podman-network-freshrss-container-user.service" ];
+    systemd.services."podman-freshrss-db".requires = [
+      "podman-network-freshrss-container-user.service"
+    ];
 
     systemd.services."podman-freshrss".after = [
       "podman-network-freshrss-container-user.service"

@@ -14,151 +14,154 @@ let
   paperlessUsermapUid = 0;
   paperlessUsermapGid = 0;
 
-  instanceOptions = { name, ... }: {
-    options = {
-      enable = mkEnableOption "Enable this Paperless-ngx instance.";
+  instanceOptions =
+    { name, ... }:
+    {
+      options = {
+        enable = mkEnableOption "Enable this Paperless-ngx instance.";
 
-      sopsFile = mkOption {
-        type = types.path;
-        description = "Path to sops file containing secrets.";
-      };
-
-      domain = mkOption {
-        type = types.str;
-        description = "Domain used for Paperless-ngx.";
-      };
-
-      appImage = mkOption {
-        type = types.str;
-        default = "ghcr.io/paperless-ngx/paperless-ngx:2.20.10"; # renovate: docker
-      };
-
-      dbImage = mkOption {
-        type = types.str;
-        default = "postgres:16-alpine"; # renovate: docker
-      };
-
-      redisImage = mkOption {
-        type = types.str;
-        default = "redis:7"; # renovate: docker
-      };
-
-      scanImage = mkOption {
-        type = types.str;
-        default = "manuc66/node-hp-scan-to:latest"; # renovate: docker
-      };
-
-      appTitle = mkOption {
-        type = types.str;
-        default = "Paperless";
-        description = "Display title for Paperless-ngx.";
-      };
-
-      dataPath = mkOption {
-        type = types.str;
-        default = "/mnt/storage/containers/paperless-ngx-${name}/data";
-        description = "Path to store Paperless data.";
-      };
-
-      mediaPath = mkOption {
-        type = types.str;
-        default = "/mnt/storage/containers/paperless-ngx-${name}/media";
-        description = "Path to store Paperless media.";
-      };
-
-      consumePath = mkOption {
-        type = types.str;
-        default = "/mnt/storage/containers/paperless-ngx-${name}/consume";
-        description = "Path to store Paperless consume directory.";
-      };
-
-      exportPath = mkOption {
-        type = types.str;
-        default = "/mnt/storage/containers/paperless-ngx-${name}/export";
-        description = "Path to store Paperless export directory.";
-      };
-
-      dbDataPath = mkOption {
-        type = types.str;
-        default = "/mnt/storage/containers/paperless-ngx-${name}-db/data";
-        description = "Path to store Postgres data.";
-      };
-
-      redisDataPath = mkOption {
-        type = types.str;
-        default = "/mnt/storage/containers/paperless-ngx-${name}-redis/data";
-        description = "Path to store Redis data.";
-      };
-
-      scanTo = {
-        enable = mkOption {
-          type = types.bool;
-          default = true;
-          description = "Enable node-hp-scan-to container.";
+        sopsFile = mkOption {
+          type = types.path;
+          description = "Path to sops file containing secrets.";
         };
 
-        ip = mkOption {
+        domain = mkOption {
           type = types.str;
-          description = "Scanner IP address.";
+          description = "Domain used for Paperless-ngx.";
         };
 
-        label = mkOption {
+        appImage = mkOption {
           type = types.str;
-          description = "Scanner label.";
+          default = "ghcr.io/paperless-ngx/paperless-ngx:2.20.10"; # renovate: docker
         };
 
-        pattern = mkOption {
+        dbImage = mkOption {
           type = types.str;
-          default = "\"scan\"_dd.mm.yyyy_hh:MM:ss";
-          description = "Scan file name pattern.";
-        };
-      };
-
-      dbLocalhostPort = mkOption {
-        type = types.nullOr types.port;
-        default = null;
-        description = "When set, publish the DB port to this loopback port on the host.";
-      };
-
-      allowlistGroups = mkOption {
-        type = types.listOf types.str;
-        default = [ ];
-        description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
-      };
-
-      gpg = {
-        enable = mkOption {
-          type = types.bool;
-          default = false;
-          description = "Enable GPG decryption support.";
+          default = "postgres:16-alpine"; # renovate: docker
         };
 
-        homePath = mkOption {
+        redisImage = mkOption {
           type = types.str;
-          default = "/mnt/storage/containers/paperless-ngx-${name}/gpg";
-          description = "Path to the GPG home directory on the host.";
+          default = "redis:7"; # renovate: docker
         };
 
-        gpgConfText = mkOption {
+        scanImage = mkOption {
           type = types.str;
-          default = "pinentry-mode loopback\n";
-          description = "Contents for gpg.conf in the GPG home.";
+          default = "manuc66/node-hp-scan-to:latest"; # renovate: docker
         };
 
-        gpgAgentConfText = mkOption {
+        appTitle = mkOption {
           type = types.str;
-          default = "allow-loopback-pinentry\n";
-          description = "Contents for gpg-agent.conf in the GPG home.";
+          default = "Paperless";
+          description = "Display title for Paperless-ngx.";
+        };
+
+        dataPath = mkOption {
+          type = types.str;
+          default = "/mnt/storage/containers/paperless-ngx-${name}/data";
+          description = "Path to store Paperless data.";
+        };
+
+        mediaPath = mkOption {
+          type = types.str;
+          default = "/mnt/storage/containers/paperless-ngx-${name}/media";
+          description = "Path to store Paperless media.";
+        };
+
+        consumePath = mkOption {
+          type = types.str;
+          default = "/mnt/storage/containers/paperless-ngx-${name}/consume";
+          description = "Path to store Paperless consume directory.";
+        };
+
+        exportPath = mkOption {
+          type = types.str;
+          default = "/mnt/storage/containers/paperless-ngx-${name}/export";
+          description = "Path to store Paperless export directory.";
+        };
+
+        dbDataPath = mkOption {
+          type = types.str;
+          default = "/mnt/storage/containers/paperless-ngx-${name}-db/data";
+          description = "Path to store Postgres data.";
+        };
+
+        redisDataPath = mkOption {
+          type = types.str;
+          default = "/mnt/storage/containers/paperless-ngx-${name}-redis/data";
+          description = "Path to store Redis data.";
+        };
+
+        scanTo = {
+          enable = mkOption {
+            type = types.bool;
+            default = true;
+            description = "Enable node-hp-scan-to container.";
+          };
+
+          ip = mkOption {
+            type = types.str;
+            description = "Scanner IP address.";
+          };
+
+          label = mkOption {
+            type = types.str;
+            description = "Scanner label.";
+          };
+
+          pattern = mkOption {
+            type = types.str;
+            default = "\"scan\"_dd.mm.yyyy_hh:MM:ss";
+            description = "Scan file name pattern.";
+          };
+        };
+
+        dbLocalhostPort = mkOption {
+          type = types.nullOr types.port;
+          default = null;
+          description = "When set, publish the DB port to this loopback port on the host.";
+        };
+
+        allowlistGroups = mkOption {
+          type = types.listOf types.str;
+          default = [ ];
+          description = "List of Traefik IP group names to concatenate into an ipAllowList middleware. Groups are defined in myServices.traefik.allowlistGroups.";
+        };
+
+        gpg = {
+          enable = mkOption {
+            type = types.bool;
+            default = false;
+            description = "Enable GPG decryption support.";
+          };
+
+          homePath = mkOption {
+            type = types.str;
+            default = "/mnt/storage/containers/paperless-ngx-${name}/gpg";
+            description = "Path to the GPG home directory on the host.";
+          };
+
+          gpgConfText = mkOption {
+            type = types.str;
+            default = "pinentry-mode loopback\n";
+            description = "Contents for gpg.conf in the GPG home.";
+          };
+
+          gpgAgentConfText = mkOption {
+            type = types.str;
+            default = "allow-loopback-pinentry\n";
+            description = "Contents for gpg-agent.conf in the GPG home.";
+          };
         };
       };
     };
-  };
 
   enabledInstances = filterAttrs (n: v: v.enable) cfg.instances;
 
   mkContainerPrefix = name: "paperless-ngx-${name}";
 
-  mkInstanceContainers = name: instanceCfg:
+  mkInstanceContainers =
+    name: instanceCfg:
     let
       prefix = mkContainerPrefix name;
       gpgHome = instanceCfg.gpg.homePath;
@@ -193,7 +196,9 @@ let
           "--network=${prefix}"
         ];
 
-        ports = optional (instanceCfg.dbLocalhostPort != null) "127.0.0.1:${toString instanceCfg.dbLocalhostPort}:5432";
+        ports = optional (
+          instanceCfg.dbLocalhostPort != null
+        ) "127.0.0.1:${toString instanceCfg.dbLocalhostPort}:5432";
 
         environment = {
           POSTGRES_DB = "paperless";
@@ -303,7 +308,8 @@ let
       };
     };
 
-  mkSecrets = name: instanceCfg:
+  mkSecrets =
+    name: instanceCfg:
     let
       prefix = mkContainerPrefix name;
       gpgSecrets = optionalAttrs instanceCfg.gpg.enable {
@@ -348,20 +354,25 @@ let
         owner = "container-user";
         restartUnits = [ "podman-${prefix}-db.service" ];
       };
-    } // gpgSecrets;
+    }
+    // gpgSecrets;
 
-  mkTmpfiles = name: instanceCfg: [
-    "d ${instanceCfg.consumePath} 0755 container-user users -"
-    "d ${instanceCfg.dataPath} 0755 container-user users -"
-    "d ${instanceCfg.exportPath} 0755 container-user users -"
-    "d ${instanceCfg.mediaPath} 0755 container-user users -"
-    "d ${instanceCfg.redisDataPath} 0755 container-user users -"
-    "d ${instanceCfg.dbDataPath} 0755 container-user users -"
-  ] ++ optionals instanceCfg.gpg.enable [
-    "d ${instanceCfg.gpg.homePath} 0700 container-user users -"
-  ];
+  mkTmpfiles =
+    name: instanceCfg:
+    [
+      "d ${instanceCfg.consumePath} 0755 container-user users -"
+      "d ${instanceCfg.dataPath} 0755 container-user users -"
+      "d ${instanceCfg.exportPath} 0755 container-user users -"
+      "d ${instanceCfg.mediaPath} 0755 container-user users -"
+      "d ${instanceCfg.redisDataPath} 0755 container-user users -"
+      "d ${instanceCfg.dbDataPath} 0755 container-user users -"
+    ]
+    ++ optionals instanceCfg.gpg.enable [
+      "d ${instanceCfg.gpg.homePath} 0700 container-user users -"
+    ];
 
-  mkServiceDeps = name: instanceCfg:
+  mkServiceDeps =
+    name: instanceCfg:
     let
       prefix = mkContainerPrefix name;
       base = {
@@ -405,48 +416,53 @@ let
             Group = "users";
             RemainAfterExit = true;
           };
-          path = [ pkgs.gnupg pkgs.coreutils ];
-          script = let
-            fingerprintFile = config.sops.secrets."${prefix}-gpg_fingerprint".path;
-            keyFile = config.sops.secrets."${prefix}-gpg_private_key".path;
-            gpgHome = instanceCfg.gpg.homePath;
-            gpgSocket = "${instanceCfg.gpg.homePath}/S.gpg-agent";
-          in ''
-            set -euo pipefail
-            export GNUPGHOME="${gpgHome}"
-            touch "$GNUPGHOME/gpg.conf" "$GNUPGHOME/gpg-agent.conf"
-            chmod 600 "$GNUPGHOME/gpg.conf" "$GNUPGHOME/gpg-agent.conf"
-            cat > "$GNUPGHOME/gpg.conf" <<'EOF'
-${instanceCfg.gpg.gpgConfText}
-EOF
-            if ! grep -q "^pinentry-mode " "$GNUPGHOME/gpg.conf"; then
-              printf '%s\n' "pinentry-mode loopback" >> "$GNUPGHOME/gpg.conf"
-            fi
-            cat > "$GNUPGHOME/gpg-agent.conf" <<'EOF'
-${instanceCfg.gpg.gpgAgentConfText}
-EOF
+          path = [
+            pkgs.gnupg
+            pkgs.coreutils
+          ];
+          script =
+            let
+              fingerprintFile = config.sops.secrets."${prefix}-gpg_fingerprint".path;
+              keyFile = config.sops.secrets."${prefix}-gpg_private_key".path;
+              gpgHome = instanceCfg.gpg.homePath;
+              gpgSocket = "${instanceCfg.gpg.homePath}/S.gpg-agent";
+            in
+            ''
+                          set -euo pipefail
+                          export GNUPGHOME="${gpgHome}"
+                          touch "$GNUPGHOME/gpg.conf" "$GNUPGHOME/gpg-agent.conf"
+                          chmod 600 "$GNUPGHOME/gpg.conf" "$GNUPGHOME/gpg-agent.conf"
+                          cat > "$GNUPGHOME/gpg.conf" <<'EOF'
+              ${instanceCfg.gpg.gpgConfText}
+              EOF
+                          if ! grep -q "^pinentry-mode " "$GNUPGHOME/gpg.conf"; then
+                            printf '%s\n' "pinentry-mode loopback" >> "$GNUPGHOME/gpg.conf"
+                          fi
+                          cat > "$GNUPGHOME/gpg-agent.conf" <<'EOF'
+              ${instanceCfg.gpg.gpgAgentConfText}
+              EOF
 
-            gpgconf --homedir "$GNUPGHOME" --kill gpg-agent || true
-            gpgconf --homedir "$GNUPGHOME" --launch gpg-agent
-            gpg-connect-agent --homedir "$GNUPGHOME" /bye
+                          gpgconf --homedir "$GNUPGHOME" --kill gpg-agent || true
+                          gpgconf --homedir "$GNUPGHOME" --launch gpg-agent
+                          gpg-connect-agent --homedir "$GNUPGHOME" /bye
 
-            agent_socket=$(gpgconf --homedir "$GNUPGHOME" --list-dirs agent-socket)
-            if [ ! -S "$agent_socket" ]; then
-              echo "GPG agent socket not found at $agent_socket" >&2
-              exit 1
-            fi
-            ln -sf "$agent_socket" "$GNUPGHOME/S.gpg-agent"
+                          agent_socket=$(gpgconf --homedir "$GNUPGHOME" --list-dirs agent-socket)
+                          if [ ! -S "$agent_socket" ]; then
+                            echo "GPG agent socket not found at $agent_socket" >&2
+                            exit 1
+                          fi
+                          ln -sf "$agent_socket" "$GNUPGHOME/S.gpg-agent"
 
-            fingerprint=$(cat "${fingerprintFile}")
-            if ! gpg --batch --list-secret-keys "$fingerprint" >/dev/null 2>&1; then
-              gpg --batch --import "${keyFile}"
-            fi
+                          fingerprint=$(cat "${fingerprintFile}")
+                          if ! gpg --batch --list-secret-keys "$fingerprint" >/dev/null 2>&1; then
+                            gpg --batch --import "${keyFile}"
+                          fi
 
-            if [ ! -S "${gpgSocket}" ]; then
-              echo "GPG agent socket not found at ${gpgSocket}" >&2
-              exit 1
-            fi
-          '';
+                          if [ ! -S "${gpgSocket}" ]; then
+                            echo "GPG agent socket not found at ${gpgSocket}" >&2
+                            exit 1
+                          fi
+            '';
           wantedBy = [ "multi-user.target" ];
         };
       };
@@ -461,22 +477,27 @@ EOF
             Group = "users";
             RemainAfterExit = true;
           };
-          path = [ pkgs.gnupg pkgs.coreutils ];
-          script = let
-            mailFile = config.sops.secrets."${prefix}-gpg_mail".path;
-            passphraseFile = config.sops.secrets."${prefix}-gpg_passphrase".path;
-            gpgHome = instanceCfg.gpg.homePath;
-          in ''
-            set -euo pipefail
-            export GNUPGHOME="${gpgHome}"
-            gpgconf --homedir "$GNUPGHOME" --kill gpg-agent || true
-            gpgconf --homedir "$GNUPGHOME" --launch gpg-agent
-            gpg-connect-agent --homedir "$GNUPGHOME" /bye
-            mail=$(cat "${mailFile}")
-            echo "cache warmup" | gpg --batch --no-tty --pinentry-mode loopback \
-              --passphrase-file "${passphraseFile}" --local-user "$mail" --sign \
-              --output /dev/null
-          '';
+          path = [
+            pkgs.gnupg
+            pkgs.coreutils
+          ];
+          script =
+            let
+              mailFile = config.sops.secrets."${prefix}-gpg_mail".path;
+              passphraseFile = config.sops.secrets."${prefix}-gpg_passphrase".path;
+              gpgHome = instanceCfg.gpg.homePath;
+            in
+            ''
+              set -euo pipefail
+              export GNUPGHOME="${gpgHome}"
+              gpgconf --homedir "$GNUPGHOME" --kill gpg-agent || true
+              gpgconf --homedir "$GNUPGHOME" --launch gpg-agent
+              gpg-connect-agent --homedir "$GNUPGHOME" /bye
+              mail=$(cat "${mailFile}")
+              echo "cache warmup" | gpg --batch --no-tty --pinentry-mode loopback \
+                --passphrase-file "${passphraseFile}" --local-user "$mail" --sign \
+                --output /dev/null
+            '';
           wantedBy = [ "multi-user.target" ];
         };
       };
@@ -489,24 +510,19 @@ EOF
     in
     base // gpgSetup // gpgCache // scan;
 
-  containers = foldl' (
-    acc: name:
-    acc // (mkInstanceContainers name enabledInstances.${name})
-  ) { } (attrNames enabledInstances);
+  containers = foldl' (acc: name: acc // (mkInstanceContainers name enabledInstances.${name})) { } (
+    attrNames enabledInstances
+  );
 
-  sopsSecrets = foldl' (
-    acc: name:
-    acc // (mkSecrets name enabledInstances.${name})
-  ) { } (attrNames enabledInstances);
+  sopsSecrets = foldl' (acc: name: acc // (mkSecrets name enabledInstances.${name})) { } (
+    attrNames enabledInstances
+  );
 
-  tmpfiles = concatMap (
-    name: mkTmpfiles name enabledInstances.${name}
-  ) (attrNames enabledInstances);
+  tmpfiles = concatMap (name: mkTmpfiles name enabledInstances.${name}) (attrNames enabledInstances);
 
-  serviceDeps = foldl' (
-    acc: name:
-    acc // (mkServiceDeps name enabledInstances.${name})
-  ) { } (attrNames enabledInstances);
+  serviceDeps = foldl' (acc: name: acc // (mkServiceDeps name enabledInstances.${name})) { } (
+    attrNames enabledInstances
+  );
 
   gpgTimers = foldl' (
     acc: name:
@@ -514,7 +530,8 @@ EOF
       instanceCfg = enabledInstances.${name};
       timerName = "paperless-ngx-${name}-gpg-cache";
     in
-    acc // optionalAttrs instanceCfg.gpg.enable {
+    acc
+    // optionalAttrs instanceCfg.gpg.enable {
       "${timerName}" = {
         wantedBy = [ "timers.target" ];
         timerConfig = {
@@ -537,9 +554,17 @@ in
   };
 
   config = mkIf (enabledInstances != { }) {
-    environment.systemPackages = mkIf (any (instanceCfg: instanceCfg.gpg.enable) (attrValues enabledInstances)) [
-      pkgs.gnupg
-    ];
+    myServices.monitoring.endpoints = mapAttrsToList (name: instanceCfg: {
+      name = "Paperless-ngx (${name})";
+      group = "Servy - Internal";
+      url = "https://${instanceCfg.domain}";
+    }) enabledInstances;
+
+    environment.systemPackages =
+      mkIf (any (instanceCfg: instanceCfg.gpg.enable) (attrValues enabledInstances))
+        [
+          pkgs.gnupg
+        ];
     myServices.podman = {
       enable = true;
       networks =

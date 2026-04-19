@@ -37,7 +37,7 @@ in
 
     appImage = mkOption {
       type = types.str;
-      default = "logiclabshq/open-archiver:v0.4.2"; # renovate: docker
+      default = "logiclabshq/open-archiver:v0.5.0"; # renovate: docker
     };
 
     dbImage = mkOption {
@@ -81,6 +81,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "Open Archiver";
+        group = "Servy - Internal";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [
@@ -179,7 +187,10 @@ in
       ];
 
       entrypoint = "sh";
-      cmd = [ "-c" "valkey-server --requirepass \"$REDIS_PASSWORD\"" ];
+      cmd = [
+        "-c"
+        "valkey-server --requirepass \"$REDIS_PASSWORD\""
+      ];
 
       environmentFiles = [ config.sops.secrets."open-archiver-valkey_env".path ];
 
@@ -267,14 +278,26 @@ in
         };
     };
 
-    systemd.services."podman-open-archiver-db".after = [ "podman-network-open-archiver-container-user.service" ];
-    systemd.services."podman-open-archiver-db".requires = [ "podman-network-open-archiver-container-user.service" ];
+    systemd.services."podman-open-archiver-db".after = [
+      "podman-network-open-archiver-container-user.service"
+    ];
+    systemd.services."podman-open-archiver-db".requires = [
+      "podman-network-open-archiver-container-user.service"
+    ];
 
-    systemd.services."podman-open-archiver-valkey".after = [ "podman-network-open-archiver-container-user.service" ];
-    systemd.services."podman-open-archiver-valkey".requires = [ "podman-network-open-archiver-container-user.service" ];
+    systemd.services."podman-open-archiver-valkey".after = [
+      "podman-network-open-archiver-container-user.service"
+    ];
+    systemd.services."podman-open-archiver-valkey".requires = [
+      "podman-network-open-archiver-container-user.service"
+    ];
 
-    systemd.services."podman-open-archiver-meilisearch".after = [ "podman-network-open-archiver-container-user.service" ];
-    systemd.services."podman-open-archiver-meilisearch".requires = [ "podman-network-open-archiver-container-user.service" ];
+    systemd.services."podman-open-archiver-meilisearch".after = [
+      "podman-network-open-archiver-container-user.service"
+    ];
+    systemd.services."podman-open-archiver-meilisearch".requires = [
+      "podman-network-open-archiver-container-user.service"
+    ];
 
     systemd.services."podman-open-archiver".after = [
       "podman-network-open-archiver-container-user.service"

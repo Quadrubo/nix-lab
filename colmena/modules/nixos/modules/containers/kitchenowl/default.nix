@@ -58,6 +58,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "KitchenOwl";
+        group = "Servy - External";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [
@@ -178,8 +186,12 @@ in
       };
     };
 
-    systemd.services."podman-kitchenowl-db".after = [ "podman-network-kitchenowl-container-user.service" ];
-    systemd.services."podman-kitchenowl-db".requires = [ "podman-network-kitchenowl-container-user.service" ];
+    systemd.services."podman-kitchenowl-db".after = [
+      "podman-network-kitchenowl-container-user.service"
+    ];
+    systemd.services."podman-kitchenowl-db".requires = [
+      "podman-network-kitchenowl-container-user.service"
+    ];
 
     systemd.services."podman-kitchenowl-backend".after = [
       "podman-network-kitchenowl-container-user.service"

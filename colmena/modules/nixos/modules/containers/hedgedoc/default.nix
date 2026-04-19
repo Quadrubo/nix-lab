@@ -47,6 +47,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "HedgeDoc";
+        group = "Servy - External";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [
@@ -161,7 +169,9 @@ in
     };
 
     systemd.services."podman-hedgedoc-db".after = [ "podman-network-hedgedoc-container-user.service" ];
-    systemd.services."podman-hedgedoc-db".requires = [ "podman-network-hedgedoc-container-user.service" ];
+    systemd.services."podman-hedgedoc-db".requires = [
+      "podman-network-hedgedoc-container-user.service"
+    ];
 
     systemd.services."podman-hedgedoc".after = [
       "podman-network-hedgedoc-container-user.service"

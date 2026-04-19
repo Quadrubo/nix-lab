@@ -79,6 +79,14 @@ in
   };
 
   config = mkIf cfg.enable {
+    myServices.monitoring.endpoints = [
+      {
+        name = "Unifi Network Application";
+        group = "Servy - Internal";
+        url = "https://${cfg.domain}";
+      }
+    ];
+
     myServices.traefik.serversTransports = {
       unifi-network-application = {
         insecureSkipVerify = true;
@@ -127,7 +135,9 @@ in
         "--network=unifi-network-application"
       ];
 
-      ports = lib.optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:27017";
+      ports = lib.optional (
+        cfg.dbLocalhostPort != null
+      ) "127.0.0.1:${toString cfg.dbLocalhostPort}:27017";
 
       environment = {
         MONGO_USER = "unifi";
@@ -200,18 +210,24 @@ in
           "traefik.http.routers.unifi-network-application.tls.certresolver" = "myresolver";
           "traefik.http.services.unifi-network-application.loadbalancer.server.port" = "8443";
           "traefik.http.services.unifi-network-application.loadbalancer.server.scheme" = "https";
-          "traefik.http.services.unifi-network-application.loadbalancer.serverstransport" = "unifi-network-application@file";
+          "traefik.http.services.unifi-network-application.loadbalancer.serverstransport" =
+            "unifi-network-application@file";
           "traefik.http.routers.unifi-network-application.service" = "unifi-network-application";
         }
         // lib.optionalAttrs (allowlistIps != [ ]) {
           "traefik.http.middlewares.unifi-network-application-allowlist.ipallowlist.sourcerange" =
             lib.concatStringsSep "," allowlistIps;
-          "traefik.http.routers.unifi-network-application.middlewares" = "unifi-network-application-allowlist@docker";
+          "traefik.http.routers.unifi-network-application.middlewares" =
+            "unifi-network-application-allowlist@docker";
         };
     };
 
-    systemd.services."podman-unifi-db".after = [ "podman-network-unifi-network-application-container-user.service" ];
-    systemd.services."podman-unifi-db".requires = [ "podman-network-unifi-network-application-container-user.service" ];
+    systemd.services."podman-unifi-db".after = [
+      "podman-network-unifi-network-application-container-user.service"
+    ];
+    systemd.services."podman-unifi-db".requires = [
+      "podman-network-unifi-network-application-container-user.service"
+    ];
 
     systemd.services."podman-unifi-network-application".after = [
       "podman-network-unifi-network-application-container-user.service"
