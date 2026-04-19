@@ -437,10 +437,24 @@
     };
 
     dawarich = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "dawarich.l.qudr.de";
+      allowlistGroups = [ "julian" ];
+    };
+
+    photon = {
+      enable = true;
+
+      domain = "photon.l.qudr.de";
+    };
+
+    tracksync-server = {
+      enable = true;
+      sopsFile = ../../secrets/servy.yaml;
+
+      domain = "tracksync.l.qudr.de";
       allowlistGroups = [ "julian" ];
     };
 
