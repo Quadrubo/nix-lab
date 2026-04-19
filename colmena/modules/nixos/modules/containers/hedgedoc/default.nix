@@ -25,7 +25,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:17-alpine"; # renovate: docker
+      default = "postgres:18-alpine"; # renovate: docker
     };
 
     domain = mkOption {
