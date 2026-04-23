@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "syncthing/syncthing:1"; # renovate: docker
+      default = "syncthing/syncthing:2"; # renovate: docker
     };
 
     domain = mkOption {
