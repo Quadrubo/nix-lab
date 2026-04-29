@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/rtuszik/photon-docker:2.1.1"; # renovate: docker
+      default = "ghcr.io/rtuszik/photon-docker:2.2.0"; # renovate: docker
     };
 
     domain = mkOption {
