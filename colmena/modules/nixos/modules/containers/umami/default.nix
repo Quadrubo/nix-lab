@@ -31,7 +31,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:15-alpine"; # renovate: docker
+      default = "postgres:18-alpine"; # renovate: docker
     };
 
     dbLocalhostPort = mkOption {
@@ -109,7 +109,7 @@ in
       environmentFiles = [ config.sops.secrets."umami-db_env".path ];
 
       volumes = [
-        "/mnt/storage/containers/umami-db/data:/var/lib/postgresql/data"
+        "/mnt/storage/containers/umami-db/data:/var/lib/postgresql/18/docker"
       ];
     };
 

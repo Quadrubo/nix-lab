@@ -25,7 +25,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:17-alpine"; # renovate: docker
+      default = "postgres:18-alpine"; # renovate: docker
     };
 
     domain = mkOption {
@@ -118,7 +118,7 @@ in
       environmentFiles = [ config.sops.secrets."hedgedoc-db_env".path ];
 
       volumes = [
-        "/mnt/storage/containers/hedgedoc-db/data:/var/lib/postgresql/data"
+        "/mnt/storage/containers/hedgedoc-db/data:/var/lib/postgresql/18/docker"
       ];
     };
 

@@ -42,7 +42,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:17-alpine"; # renovate: docker
+      default = "postgres:18-alpine"; # renovate: docker
     };
 
     valkeyImage = mkOption {
@@ -171,7 +171,7 @@ in
       environmentFiles = [ config.sops.secrets."open-archiver-db_env".path ];
 
       volumes = [
-        "${cfg.dbDataPath}:/var/lib/postgresql/data"
+        "${cfg.dbDataPath}:/var/lib/postgresql/18/docker"
       ];
     };
 

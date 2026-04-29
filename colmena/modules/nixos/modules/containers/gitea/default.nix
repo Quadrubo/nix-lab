@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "gitea/gitea:1"; # renovate: docker
+      default = "gitea/gitea:1.26.1"; # renovate: docker
     };
 
     dbImage = mkOption {

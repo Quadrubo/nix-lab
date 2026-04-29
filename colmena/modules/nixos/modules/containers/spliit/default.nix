@@ -25,7 +25,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:16-alpine"; # renovate: docker
+      default = "postgres:18-alpine"; # renovate: docker
     };
 
     domain = mkOption {
@@ -119,7 +119,7 @@ in
       environmentFiles = [ config.sops.secrets."spliit-db_env".path ];
 
       volumes = [
-        "${cfg.dbPath}:/var/lib/postgresql/data"
+        "${cfg.dbPath}:/var/lib/postgresql/18/docker"
       ];
     };
 
