@@ -35,7 +35,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:15"; # renovate: docker
+      default = "postgres:18"; # renovate: docker
     };
 
     backendDataPath = mkOption {
@@ -128,7 +128,7 @@ in
       environmentFiles = [ config.sops.secrets."kitchenowl-db_env".path ];
 
       volumes = [
-        "${cfg.dbDataPath}:/var/lib/postgresql/data"
+        "${cfg.dbDataPath}:/var/lib/postgresql/18/docker"
       ];
     };
 
