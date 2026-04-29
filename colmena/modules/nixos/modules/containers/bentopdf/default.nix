@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/alam00000/bentopdf-simple:2.8.2"; # renovate: docker
+      default = "ghcr.io/alam00000/bentopdf-simple:2.8.4"; # renovate: docker
     };
 
     domain = mkOption {
