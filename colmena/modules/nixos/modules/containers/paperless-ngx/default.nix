@@ -37,7 +37,7 @@ let
 
         dbImage = mkOption {
           type = types.str;
-          default = "postgres:18-alpine"; # renovate: docker
+          default = "postgres:18.3-alpine"; # renovate: docker
         };
 
         redisImage = mkOption {
@@ -47,7 +47,7 @@ let
 
         scanImage = mkOption {
           type = types.str;
-          default = "manuc66/node-hp-scan-to:latest"; # renovate: docker
+          default = "manuc66/node-hp-scan-to:1.10.0"; # renovate: docker
         };
 
         appTitle = mkOption {

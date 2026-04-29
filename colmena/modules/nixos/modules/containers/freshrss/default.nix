@@ -20,12 +20,12 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "freshrss/freshrss:1-alpine"; # renovate: docker
+      default = "freshrss/freshrss:1.28.1-alpine"; # renovate: docker
     };
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:18-alpine"; # renovate: docker
+      default = "postgres:18.3-alpine"; # renovate: docker
     };
 
     domain = mkOption {

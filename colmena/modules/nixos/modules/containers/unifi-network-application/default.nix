@@ -23,7 +23,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "lscr.io/linuxserver/unifi-network-application:latest"; # renovate: docker
+      default = "lscr.io/linuxserver/unifi-network-application:10.3.58"; # renovate: docker
     };
 
     dbImage = mkOption {

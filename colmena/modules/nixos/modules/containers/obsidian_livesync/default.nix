@@ -25,7 +25,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "couchdb:3"; # renovate: docker
+      default = "couchdb:3.5.1"; # renovate: docker
     };
 
     dataPath = mkOption {

@@ -42,17 +42,17 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:18-alpine"; # renovate: docker
+      default = "postgres:18.3-alpine"; # renovate: docker
     };
 
     valkeyImage = mkOption {
       type = types.str;
-      default = "valkey/valkey:8-alpine"; # renovate: docker
+      default = "valkey/valkey:8.1.6-alpine"; # renovate: docker
     };
 
     meilisearchImage = mkOption {
       type = types.str;
-      default = "getmeili/meilisearch:v1.42"; # renovate: docker
+      default = "getmeili/meilisearch:v1.42.1"; # renovate: docker
     };
 
     appDataPath = mkOption {
