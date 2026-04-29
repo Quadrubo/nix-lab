@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "vaultwarden/server:1.35.7"; # renovate: docker
+      default = "vaultwarden/server:1.35.8"; # renovate: docker
     };
 
     domain = mkOption {
