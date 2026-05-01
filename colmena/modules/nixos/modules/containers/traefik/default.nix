@@ -123,7 +123,7 @@ in
 
       image = mkOption {
         type = types.str;
-        default = "traefik:v3.6.14"; # renovate: docker
+        default = "traefik:v3.6.15"; # renovate: docker
       };
 
       dnsChallenge = {
