@@ -47,7 +47,7 @@ in
 
     valkeyImage = mkOption {
       type = types.str;
-      default = "valkey/valkey:8.1.6-alpine"; # renovate: docker
+      default = "valkey/valkey:9.0.4-alpine"; # renovate: docker
     };
 
     meilisearchImage = mkOption {
