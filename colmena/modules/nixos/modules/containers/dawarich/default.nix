@@ -25,6 +25,8 @@ let
     STORE_GEODATA = "true";
     PHOTON_API_HOST = "photon:2322";
     PHOTON_API_USE_HTTPS = "false";
+    BROUTER_URL = "https://brouter.de/brouter";
+    BROUTER_DEFAULT_MODE = "Rail";
   };
 in
 {
