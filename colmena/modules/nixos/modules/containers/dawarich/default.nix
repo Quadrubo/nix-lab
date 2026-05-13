@@ -38,7 +38,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "freikin/dawarich:1.7.2"; # renovate: docker
+      default = "quadrubo/dawarich:1.7.7-quad.2"; # renovate: docker
     };
 
     dbImage = mkOption {
