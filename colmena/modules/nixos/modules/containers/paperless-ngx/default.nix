@@ -37,7 +37,7 @@ let
 
         dbImage = mkOption {
           type = types.str;
-          default = "postgres:18.3-alpine"; # renovate: docker
+          default = "postgres:18.4-alpine"; # renovate: docker
         };
 
         redisImage = mkOption {
