@@ -45,7 +45,7 @@ in
 
     redisImage = mkOption {
       type = types.str;
-      default = "redis:8.6.2"; # renovate: docker
+      default = "redis:8.6.3"; # renovate: docker
     };
 
     htmlPath = mkOption {
