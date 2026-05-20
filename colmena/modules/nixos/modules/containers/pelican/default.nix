@@ -61,7 +61,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "mariadb:11.8.6"; # renovate: docker
+      default = "mariadb:11.8.7"; # renovate: docker
     };
 
     panelDataPath = mkOption {
