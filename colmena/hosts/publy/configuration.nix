@@ -183,13 +183,16 @@
       ];
 
       postgresqlDatabases = [
-        {
-          name = "umami";
-          hostname = "127.0.0.1";
-          port = 5432;
-          username = "umami";
-          password = "\${UMAMI_DB_PASSWORD}";
-        }
+        # Disabled: PG18 server, but borgmatic's pg_dump is 17.x and aborts the run.
+        # Re-enable once the image ships a PG18 client.
+        # See: https://github.com/borgmatic-collective/docker-borgmatic/issues/444
+        # {
+        #   name = "umami";
+        #   hostname = "127.0.0.1";
+        #   port = 5432;
+        #   username = "umami";
+        #   password = "\${UMAMI_DB_PASSWORD}";
+        # }
       ];
 
       networks = [
