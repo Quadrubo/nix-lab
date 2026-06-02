@@ -11,63 +11,62 @@ let
   cfg = config.myServices.gatus;
 
   # Build Gatus YAML config from Nix
-  gatusConfig =
-    {
-      storage = {
-        type = "sqlite";
-        path = "/data/gatus.db";
-      };
+  gatusConfig = {
+    storage = {
+      type = "sqlite";
+      path = "/data/gatus.db";
+    };
 
-      web = {
-        port = 8080;
-      };
+    web = {
+      port = 8080;
+    };
 
-      endpoints = map (
-        ep:
-        {
-          name = ep.name;
-          url = ep.url;
-          interval = ep.interval;
-          conditions = ep.conditions;
-        }
-        // optionalAttrs (ep.group != "") {
-          group = ep.group;
-        }
-        // optionalAttrs (ep.client != { }) {
-          client = ep.client;
-        }
-        // optionalAttrs (ep.alerts != [ ]) {
-          alerts = ep.alerts;
-        }
-        // optionalAttrs (ep.alerts == [ ] && cfg.alerting.ntfy.enable) {
-          alerts = [ { type = "ntfy"; } ];
-        }
-      ) cfg.endpoints;
-    }
-    // optionalAttrs cfg.basicAuth.enable {
-      security = {
-        basic = {
-          username = "\${GATUS_USERNAME}";
-          password-bcrypt-base64 = "\${GATUS_PASSWORD_BCRYPT_BASE64}";
-        };
+    endpoints = map (
+      ep:
+      {
+        name = ep.name;
+        url = ep.url;
+        interval = ep.interval;
+        conditions = ep.conditions;
+      }
+      // optionalAttrs (ep.group != "") {
+        group = ep.group;
+      }
+      // optionalAttrs (ep.client != { }) {
+        client = ep.client;
+      }
+      // optionalAttrs (ep.alerts != [ ]) {
+        alerts = ep.alerts;
+      }
+      // optionalAttrs (ep.alerts == [ ] && cfg.alerting.ntfy.enable) {
+        alerts = [ { type = "ntfy"; } ];
+      }
+    ) cfg.endpoints;
+  }
+  // optionalAttrs cfg.basicAuth.enable {
+    security = {
+      basic = {
+        username = "\${GATUS_USERNAME}";
+        password-bcrypt-base64 = "\${GATUS_PASSWORD_BCRYPT_BASE64}";
       };
-    }
-    // optionalAttrs cfg.alerting.ntfy.enable {
-      alerting = {
-        ntfy = {
-          topic = cfg.alerting.ntfy.topic;
-          url = cfg.alerting.ntfy.url;
-          priority = cfg.alerting.ntfy.priority;
-          token = "\${NTFY_TOKEN}";
-          default-alert = {
-            enabled = true;
-            failure-threshold = cfg.alerting.ntfy.failureThreshold;
-            success-threshold = cfg.alerting.ntfy.successThreshold;
-            send-on-resolved = true;
-          };
+    };
+  }
+  // optionalAttrs cfg.alerting.ntfy.enable {
+    alerting = {
+      ntfy = {
+        topic = cfg.alerting.ntfy.topic;
+        url = cfg.alerting.ntfy.url;
+        priority = cfg.alerting.ntfy.priority;
+        token = "\${NTFY_TOKEN}";
+        default-alert = {
+          enabled = true;
+          failure-threshold = cfg.alerting.ntfy.failureThreshold;
+          success-threshold = cfg.alerting.ntfy.successThreshold;
+          send-on-resolved = true;
         };
       };
     };
+  };
 
   configFile = pkgs.writeText "gatus-config.yaml" (builtins.toJSON gatusConfig);
 in
@@ -106,7 +105,10 @@ in
       type = types.listOf types.str;
       default = [ ];
       description = "Domains to resolve to host-gateway (for services on the same host as Gatus).";
-      example = [ "gatus.r.qudr.de" "julweb.dev" ];
+      example = [
+        "gatus.r.qudr.de"
+        "julweb.dev"
+      ];
     };
 
     basicAuth = {

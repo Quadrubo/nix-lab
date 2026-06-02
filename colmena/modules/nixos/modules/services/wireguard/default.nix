@@ -40,31 +40,33 @@ in
     };
 
     peers = mkOption {
-      type = types.listOf (types.submodule {
-        options = {
-          publicKey = mkOption {
-            type = types.str;
-            description = "Public key of the peer.";
-          };
+      type = types.listOf (
+        types.submodule {
+          options = {
+            publicKey = mkOption {
+              type = types.str;
+              description = "Public key of the peer.";
+            };
 
-          allowedIPs = mkOption {
-            type = types.listOf types.str;
-            description = "Allowed IP ranges for this peer.";
-          };
+            allowedIPs = mkOption {
+              type = types.listOf types.str;
+              description = "Allowed IP ranges for this peer.";
+            };
 
-          endpoint = mkOption {
-            type = types.nullOr types.str;
-            default = null;
-            description = "Endpoint (host:port). Set on clients pointing to the server.";
-          };
+            endpoint = mkOption {
+              type = types.nullOr types.str;
+              default = null;
+              description = "Endpoint (host:port). Set on clients pointing to the server.";
+            };
 
-          persistentKeepalive = mkOption {
-            type = types.int;
-            default = 0;
-            description = "Keepalive interval in seconds. 0 to disable. Set to 25 on clients behind NAT.";
+            persistentKeepalive = mkOption {
+              type = types.int;
+              default = 0;
+              description = "Keepalive interval in seconds. 0 to disable. Set to 25 on clients behind NAT.";
+            };
           };
-        };
-      });
+        }
+      );
       default = [ ];
       description = "List of WireGuard peers.";
     };
@@ -83,7 +85,12 @@ in
       privateKeyFile = config.sops.secrets."wireguard_private_key".path;
 
       peers = map (peer: {
-        inherit (peer) publicKey allowedIPs endpoint persistentKeepalive;
+        inherit (peer)
+          publicKey
+          allowedIPs
+          endpoint
+          persistentKeepalive
+          ;
       }) cfg.peers;
     };
 

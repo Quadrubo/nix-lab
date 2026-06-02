@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Block commits with unformatted .nix files.
+
+staged=$(git diff --cached --name-only --diff-filter=ACM -- '*.nix')
+
+if [ -z "$staged" ]; then
+  exit 0
+fi
+
+if ! nix run nixpkgs#nixfmt-rfc-style -- --check $staged 2>&1; then
+  echo "" >&2
+  echo "ERROR: Staged .nix files are not formatted." >&2
+  echo "Fix with:" >&2
+  echo "  nix run nixpkgs#nixfmt-rfc-style -- $staged" >&2
+  exit 1
+fi

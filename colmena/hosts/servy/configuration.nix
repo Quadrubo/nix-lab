@@ -215,7 +215,10 @@
         enable = true;
 
         domain = "actual.l.qudr.de";
-        allowlistGroups = [ "julian" "publy" ];
+        allowlistGroups = [
+          "julian"
+          "publy"
+        ];
       };
 
       family = {
@@ -429,7 +432,10 @@
       enable = true;
 
       domain = "chartdb.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
     };
 
     crowdsec = {
@@ -448,7 +454,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "dawarich.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
     };
 
     photon = {
@@ -462,7 +471,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "tracksync.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
     };
 
     freshrss = {
@@ -470,7 +482,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "freshrss.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
       dbLocalhostPort = 5437;
     };
 
@@ -479,7 +494,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "gitea.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
       dbLocalhostPort = 3307;
     };
 
@@ -544,7 +562,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "open-archiver.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
       dbLocalhostPort = 5440;
     };
 
@@ -579,7 +600,10 @@
         domain = "paperless-j.l.qudr.de";
         appTitle = "Paperless (Julian)";
         dbLocalhostPort = 5434;
-        allowlistGroups = [ "julian" "publy" ];
+        allowlistGroups = [
+          "julian"
+          "publy"
+        ];
 
         scanTo = {
           ip = "192.168.30.10";
@@ -598,7 +622,10 @@
         domain = "paperless-l.l.qudr.de";
         appTitle = "Paperless (Lara)";
         dbLocalhostPort = 5435;
-        allowlistGroups = [ "lara" "publy" ];
+        allowlistGroups = [
+          "lara"
+          "publy"
+        ];
 
         scanTo = {
           ip = "192.168.30.10";
@@ -621,7 +648,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "speedtest.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
       dbLocalhostPort = 3309;
     };
 
@@ -644,7 +674,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "traggo.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
     };
 
     unifi-network-application = {
@@ -652,7 +685,10 @@
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "unifi.l.qudr.de";
-      allowlistGroups = [ "julian" "publy" ];
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
       dbLocalhostPort = 27017;
     };
 
