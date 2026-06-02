@@ -107,6 +107,14 @@
     trim.enable = true;
   };
 
+  # Earlyoom is configured to SIGTERM the worst offender at 10% available memory.
+  # This is done to keep the server reachable under memory pressure.
+  services.earlyoom = {
+    enable = true;
+    freeMemThreshold = 10; # SIGTERM MemAvailable < 10%
+    freeMemKillThreshold = 5; # SIGKILL MemAvailable < 5%
+  };
+
   # TODO: find place for tmux
   # TODO: get nix-shell or nix shell working for debugging
   environment.systemPackages = with pkgs; [
