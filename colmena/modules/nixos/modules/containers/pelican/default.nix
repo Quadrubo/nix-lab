@@ -51,12 +51,12 @@ in
 
     panelImage = mkOption {
       type = types.str;
-      default = "ghcr.io/pelican-dev/panel:v1.0.0-beta21"; # renovate: docker
+      default = "ghcr.io/pelican-dev/panel:v1.0.0-beta34"; # renovate: docker
     };
 
     wingsImage = mkOption {
       type = types.str;
-      default = "ghcr.io/pelican-dev/wings:v1.0.0-beta13"; # renovate: docker
+      default = "ghcr.io/pelican-dev/wings:v1.0.0-beta25"; # renovate: docker
     };
 
     dbImage = mkOption {
@@ -81,13 +81,46 @@ in
       default = "/mnt/storage/containers/pelican-db/mysql";
       description = "Path to store Pelican database data.";
     };
+
+    dbLocalhostPort = mkOption {
+      type = types.nullOr types.port;
+      default = null;
+      description = "When set, publish the DB port to this loopback port on the host (for borgmatic backups).";
+    };
+
+    serverPortRanges = mkOption {
+      type = types.listOf (
+        types.submodule {
+          options = {
+            from = mkOption { type = types.port; };
+            to = mkOption { type = types.port; };
+          };
+        }
+      );
+      default = [
+        {
+          from = 25565;
+          to = 25600;
+        } # Minecraft Java
+        {
+          from = 19132;
+          to = 19133;
+        } # Minecraft Bedrock
+      ];
+      description = ''
+        Port ranges opened (TCP + UDP) in the firewall for Pelican game-server
+        allocations. These are raw TCP/UDP connections and bypass Traefik, so
+        the host firewall must allow them (and the router must forward them for
+        external players).
+      '';
+    };
   };
 
   config = mkIf cfg.enable {
     myServices.monitoring.endpoints = [
       {
-        name = "Pelican";
-        url = "https://${cfg.domain}";
+        name = "Pelican Panel";
+        url = "https://${cfg.panelDomain}";
       }
     ];
 
@@ -98,6 +131,13 @@ in
         { name = "wings1"; }
       ];
     };
+
+    # Game-server allocations are published on the host by Wings and do NOT go
+    # through Traefik (raw TCP/UDP), so the firewall must allow them. 2022 is the
+    # Wings SFTP port. External players also need the router to forward these.
+    networking.firewall.allowedTCPPorts = [ 2022 ];
+    networking.firewall.allowedTCPPortRanges = cfg.serverPortRanges;
+    networking.firewall.allowedUDPPortRanges = cfg.serverPortRanges;
 
     sops.secrets."pelican-db_env" = {
       sopsFile = cfg.sopsFile;
@@ -140,6 +180,8 @@ in
         "--network=pelican"
       ];
 
+      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
+
       environment = {
         MYSQL_DATABASE = "panel";
         MYSQL_USER = "pelican";
@@ -162,6 +204,11 @@ in
       extraOptions = [
         "--network=traefik"
         "--network=pelican"
+        # The panel calls the Wings node back on its public URL (wingsDomain),
+        # which resolves to the host LAN IP that a rootless container can't reach.
+        # Pin it to the host gateway: panel -> haproxy -> Traefik -> wings.
+        # The node's "Connect" port must be 443 (not Wings' 8080 default) to match.
+        "--add-host=${cfg.wingsDomain}:host-gateway"
       ];
 
       environment = {
@@ -174,13 +221,20 @@ in
         DB_HOST = "pelican-db";
         DB_PORT = "3306";
         DB_USERNAME = "pelican";
+        # Behind Traefik: skip the entrypoint's Let's Encrypt email requirement
+        # (the panel does not terminate TLS itself).
+        BEHIND_PROXY = "true";
       };
 
       environmentFiles = [ config.sops.secrets."pelican-panel_env".path ];
 
+      # The panel image runs entirely as www-data (uid 82), which under rootless
+      # Podman maps to a subuid that can't write the bind mounts. ":U" makes
+      # Podman chown the mount sources to the mapped uid on start. ZFS can't do
+      # idmapped mounts, so keep-id would force a full layer copy - ":U" avoids that.
       volumes = [
-        "${cfg.panelDataPath}:/pelican-data"
-        "${cfg.panelLogsPath}:/var/www/html/storage/logs"
+        "${cfg.panelDataPath}:/pelican-data:U"
+        "${cfg.panelLogsPath}:/var/www/html/storage/logs:U"
         "${caddyFile}:/etc/caddy/Caddyfile:ro"
       ];
 
@@ -198,8 +252,12 @@ in
     };
 
     # Wings
-    # TODO: wings currently does not work because of podman incompatibilities
-    # One PR that could fix this is: https://github.com/pelican-dev/wings/pull/151
+    # Runs against the rootless Podman socket (mounted as the docker socket below).
+    # cgroup v2 caveat: the per-container OOM killer cannot be disabled, so game
+    # servers must be created with the OOM killer ENABLED in the panel. Otherwise
+    # Wings passes OomKillDisable=true and the container fails to start.
+    # Upstream fix that would make Wings handle this automatically is still open:
+    # https://github.com/pelican-dev/wings/pull/151
     virtualisation.oci-containers.containers.pelican-wings = {
       image = cfg.wingsImage;
       autoStart = true;
@@ -214,6 +272,11 @@ in
       extraOptions = [
         "--network=traefik"
         "--network=wings1"
+        # Wings calls the panel back on its public URL (panelDomain). That URL
+        # resolves to the host LAN IP, which a rootless container can't reach
+        # (pasta won't hairpin to the host's own address). Pin it to the host
+        # gateway instead so the request goes host -> haproxy -> Traefik -> panel.
+        "--add-host=${cfg.panelDomain}:host-gateway"
       ];
 
       ports = [

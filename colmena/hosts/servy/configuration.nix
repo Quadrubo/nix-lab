@@ -298,6 +298,17 @@
         "/mnt/storage/backups" # Backups from phone, etc.
         "/mnt/storage/containers"
         "/mnt/storage/documents"
+        # Pelican Wings keeps game-server data (worlds, wings.db) and node config
+        # outside /mnt/storage.
+        "/var/lib/pelican"
+        "/etc/pelican"
+      ];
+
+      # The Pelican Wings paths live outside /mnt/storage, so they must be mounted
+      # into the borgmatic container in addition to being listed as sources.
+      additionalVolumes = [
+        "/var/lib/pelican:/var/lib/pelican:ro"
+        "/etc/pelican:/etc/pelican:ro"
       ];
 
       repositories = [
@@ -324,7 +335,14 @@
           password = "\${NEXTCLOUD_DB_PASSWORD}";
           options = "--skip-ssl";
         }
-        # TODO: pelican
+        {
+          name = "panel";
+          hostname = "127.0.0.1";
+          port = 3311;
+          username = "pelican";
+          password = "\${PELICAN_DB_PASSWORD}";
+          options = "--skip-ssl";
+        }
         {
           name = "speedtest_tracker";
           hostname = "127.0.0.1";
@@ -634,13 +652,15 @@
       };
     };
 
-    # TODO: get this working on rootless podman
     pelican = {
-      enable = false;
+      enable = true;
       sopsFile = ../../secrets/servy.yaml;
 
       panelDomain = "pelican-panel.l.qudr.de";
       wingsDomain = "pelican-wings.l.qudr.de";
+
+      # Publish the panel DB on a loopback port so borgmatic can dump it.
+      dbLocalhostPort = 3311;
     };
 
     speedtest-tracker = {
