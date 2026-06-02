@@ -362,44 +362,49 @@
       ];
 
       postgresqlDatabases = [
-        # Disabled: PG18 servers, but borgmatic's pg_dump is 17.x and aborts the run.
-        # Re-enable once the image ships a PG18 client (immich is PG14, still works).
-        # See: https://github.com/borgmatic-collective/docker-borgmatic/issues/444
-        # {
-        #   name = "paperless";
-        #   hostname = "127.0.0.1";
-        #   port = 5433;
-        #   username = "paperless";
-        #   password = "\${PAPERLESS_FAMILY_DB_PASSWORD}";
-        # }
-        # {
-        #   name = "paperless";
-        #   hostname = "127.0.0.1";
-        #   port = 5434;
-        #   username = "paperless";
-        #   password = "\${PAPERLESS_JULIAN_DB_PASSWORD}";
-        # }
-        # {
-        #   name = "paperless";
-        #   hostname = "127.0.0.1";
-        #   port = 5435;
-        #   username = "paperless";
-        #   password = "\${PAPERLESS_LARA_DB_PASSWORD}";
-        # }
-        # {
-        #   name = "hedgedoc";
-        #   hostname = "127.0.0.1";
-        #   port = 5436;
-        #   username = "hedgedoc";
-        #   password = "\${HEDGEDOC_DB_PASSWORD}";
-        # }
-        # {
-        #   name = "freshrss";
-        #   hostname = "127.0.0.1";
-        #   port = 5437;
-        #   username = "freshrss";
-        #   password = "\${FRESHRSS_DB_PASSWORD}";
-        # }
+        # PG18 servers dump via a temp client container (useDumpContainer), since
+        # borgmatic's bundled pg_dump is 17.x. immich is PG14 and uses the bundled client.
+        # https://github.com/borgmatic-collective/docker-borgmatic/issues/444
+        {
+          name = "paperless";
+          hostname = "127.0.0.1";
+          port = 5433;
+          username = "paperless";
+          password = "\${PAPERLESS_FAMILY_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
+        {
+          name = "paperless";
+          hostname = "127.0.0.1";
+          port = 5434;
+          username = "paperless";
+          password = "\${PAPERLESS_JULIAN_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
+        {
+          name = "paperless";
+          hostname = "127.0.0.1";
+          port = 5435;
+          username = "paperless";
+          password = "\${PAPERLESS_LARA_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
+        {
+          name = "hedgedoc";
+          hostname = "127.0.0.1";
+          port = 5436;
+          username = "hedgedoc";
+          password = "\${HEDGEDOC_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
+        {
+          name = "freshrss";
+          hostname = "127.0.0.1";
+          port = 5437;
+          username = "freshrss";
+          password = "\${FRESHRSS_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
         {
           name = "immich";
           hostname = "127.0.0.1";
@@ -407,27 +412,30 @@
           username = "postgres";
           password = "\${IMMICH_DB_PASSWORD}";
         }
-        # {
-        #   name = "spliit";
-        #   hostname = "127.0.0.1";
-        #   port = 5439;
-        #   username = "spliit";
-        #   password = "\${SPLIIT_DB_PASSWORD}";
-        # }
-        # {
-        #   name = "open_archive";
-        #   hostname = "127.0.0.1";
-        #   port = 5440;
-        #   username = "admin";
-        #   password = "\${OPEN_ARCHIVER_DB_PASSWORD}";
-        # }
-        # {
-        #   name = "kitchenowl";
-        #   hostname = "127.0.0.1";
-        #   port = 5441;
-        #   username = "kitchenowl";
-        #   password = "\${KITCHENOWL_DB_PASSWORD}";
-        # }
+        {
+          name = "spliit";
+          hostname = "127.0.0.1";
+          port = 5439;
+          username = "spliit";
+          password = "\${SPLIIT_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
+        {
+          name = "open_archive";
+          hostname = "127.0.0.1";
+          port = 5440;
+          username = "admin";
+          password = "\${OPEN_ARCHIVER_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
+        {
+          name = "kitchenowl";
+          hostname = "127.0.0.1";
+          port = 5441;
+          username = "kitchenowl";
+          password = "\${KITCHENOWL_DB_PASSWORD}";
+          useDumpContainer = true;
+        }
       ];
 
       mongodbDatabases = [

@@ -10,6 +10,29 @@ with lib;
 let
   cfg = config.myServices.borgmatic;
 
+  usesPgDumpContainer = any (db: db.useDumpContainer or false) cfg.postgresqlDatabases;
+
+  # Run pg_dump/pg_restore/psql in a throwaway PostgreSQL client container (via the
+  # host podman socket) so the client version matches the server, even though the
+  # borgmatic image's bundled client is older.
+  # https://github.com/borgmatic-collective/docker-borgmatic/issues/444
+  pgClientCommand =
+    interactive: bin:
+    "docker run --rm ${optionalString interactive "--interactive "}--network host --env PGPASSWORD ${cfg.postgresqlDumpImage} ${bin}";
+
+  postgresqlDatabases = map (
+    db:
+    if db.useDumpContainer or false then
+      (removeAttrs db [ "useDumpContainer" ])
+      // {
+        pg_dump_command = pgClientCommand false "pg_dump";
+        pg_restore_command = pgClientCommand true "pg_restore";
+        psql_command = pgClientCommand true "psql";
+      }
+    else
+      db
+  ) cfg.postgresqlDatabases;
+
   crontabFile = pkgs.writeText "crontab.txt" ''
     ${cfg.cronSchedule} PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --stats -v 0 2>&1
   '';
@@ -18,7 +41,7 @@ let
     builtins.toJSON {
       source_directories = cfg.sourceDirectories;
       mariadb_databases = cfg.mariadbDatabases;
-      postgresql_databases = cfg.postgresqlDatabases;
+      postgresql_databases = postgresqlDatabases;
       mongodb_databases = cfg.mongodbDatabases;
       sqlite_databases = cfg.sqliteDatabases;
       repositories = cfg.repositories;
@@ -93,6 +116,22 @@ in
     image = mkOption {
       type = types.str;
       default = "ghcr.io/borgmatic-collective/borgmatic:1.9.14"; # renovate: docker
+    };
+
+    postgresqlDumpImage = mkOption {
+      type = types.str;
+      default = "postgres:18-alpine"; # renovate: docker
+      description = ''
+        Image used to run pg_dump/pg_restore/psql in a throwaway container for
+        PostgreSQL servers newer than the client bundled in the borgmatic image.
+        Set `useDumpContainer = true;` on a postgresqlDatabases entry to use it.
+      '';
+    };
+
+    podmanSocket = mkOption {
+      type = types.str;
+      default = "/run/podman/podman.sock";
+      description = "Host podman socket mounted into the container so dump commands can spawn client containers.";
     };
 
     hostname = mkOption {
@@ -231,6 +270,13 @@ in
 
       environmentFiles = [ config.sops.secrets."borgmatic_env".path ];
 
+      # Install the docker client so dump commands can spawn client containers via
+      # the mounted podman socket (podman speaks the Docker API).
+      environment = mkIf usesPgDumpContainer {
+        DOCKERCLI = "true";
+        DOCKER_HOST = "unix://${cfg.podmanSocket}";
+      };
+
       volumes = lib.flatten [
         # Configuration files
         [
@@ -250,6 +296,8 @@ in
         ]
         # Additional volumes
         cfg.additionalVolumes
+        # Podman socket for running database client containers (see postgresqlDumpImage)
+        (optional usesPgDumpContainer "${cfg.podmanSocket}:${cfg.podmanSocket}")
       ];
     };
 
