@@ -120,6 +120,7 @@ in
     myServices.monitoring.endpoints = [
       {
         name = "Pelican Panel";
+        group = "Servy - Internal";
         url = "https://${cfg.panelDomain}";
       }
     ];
