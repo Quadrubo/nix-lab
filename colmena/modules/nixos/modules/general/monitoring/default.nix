@@ -29,7 +29,7 @@ let
 
         interval = mkOption {
           type = types.str;
-          default = "1m";
+          default = "30s";
           description = "How often to check this endpoint.";
         };
 

@@ -147,7 +147,7 @@ in
 
         failureThreshold = mkOption {
           type = types.int;
-          default = 1;
+          default = 3;
           description = "Number of consecutive failures before alerting.";
         };
 
