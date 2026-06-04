@@ -179,6 +179,8 @@ in
 
       extraOptions = [
         "--network=pelican"
+        # Allow MariaDB time to shut down cleanly to avoid tc.log corruption
+        "--stop-timeout=30"
       ];
 
       ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
