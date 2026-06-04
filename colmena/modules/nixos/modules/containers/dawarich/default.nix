@@ -50,7 +50,7 @@ in
 
     redisImage = mkOption {
       type = types.str;
-      default = "redis:7.4.8-alpine"; # renovate: docker
+      default = "redis:7.4.9-alpine"; # renovate: docker
     };
 
     domain = mkOption {
