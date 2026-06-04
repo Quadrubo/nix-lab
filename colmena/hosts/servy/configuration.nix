@@ -328,14 +328,6 @@
 
       mariadbDatabases = [
         {
-          name = "gitea";
-          hostname = "127.0.0.1";
-          port = 3307;
-          username = "gitea";
-          password = "\${GITEA_DB_PASSWORD}";
-          options = "--skip-ssl";
-        }
-        {
           name = "nextcloud";
           hostname = "127.0.0.1";
           port = 3308;
@@ -458,6 +450,14 @@
           name = "vaultwarden";
           path = "/mnt/storage/containers/vaultwarden/data/db.sqlite3";
         }
+        {
+          name = "forgejo";
+          path = "/mnt/storage/containers/forgejo/data/gitea/forgejo.db";
+        }
+        {
+          name = "gitea-mirror";
+          path = "/mnt/storage/containers/gitea-mirror/data/gitea-mirror.db";
+        }
       ];
 
       networks = [
@@ -526,16 +526,26 @@
       dbLocalhostPort = 5437;
     };
 
-    gitea = {
+    forgejo = {
       enable = true;
-      sopsFile = ../../secrets/servy.yaml;
 
-      domain = "gitea.l.qudr.de";
+      domain = "forgejo.l.qudr.de";
       allowlistGroups = [
         "julian"
         "publy"
       ];
-      dbLocalhostPort = 3307;
+    };
+
+    gitea-mirror = {
+      enable = true;
+      sopsFile = ../../secrets/servy.yaml;
+
+      domain = "gitea-mirror.l.qudr.de";
+      allowlistGroups = [
+        "julian"
+        "publy"
+      ];
+      starredLists = [ "selfhosted" ];
     };
 
     hedgedoc = {
