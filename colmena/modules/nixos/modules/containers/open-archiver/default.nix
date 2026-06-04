@@ -210,6 +210,12 @@ in
         "--network=open-archiver"
       ];
 
+      # Migrate the on-disk database in place when the engine version is newer
+      # than the stored data version.
+      environment = {
+        MEILI_EXPERIMENTAL_DUMPLESS_UPGRADE = "true";
+      };
+
       environmentFiles = [ config.sops.secrets."open-archiver-meilisearch_env".path ];
 
       volumes = [
