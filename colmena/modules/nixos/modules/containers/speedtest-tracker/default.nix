@@ -78,6 +78,15 @@ in
       }
     ];
 
+    myServices.backups.mariadbDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "speedtest_tracker";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "speedtest";
+      password = "\${SPEEDTEST_TRACKER_DB_PASSWORD}";
+      options = "--skip-ssl";
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

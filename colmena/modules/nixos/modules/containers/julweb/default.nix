@@ -49,6 +49,15 @@ in
       }
     ];
 
+    myServices.backups.mariadbDatabases = lib.optional (cfg.dbLocalhostPort != null) {
+      name = "julweb";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "julweb";
+      password = "\${JULWEB_DB_PASSWORD}";
+      options = "--skip-ssl";
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

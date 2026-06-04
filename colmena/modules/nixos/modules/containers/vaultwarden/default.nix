@@ -44,6 +44,13 @@ in
       }
     ];
 
+    myServices.backups.sqliteDatabases = [
+      {
+        name = "vaultwarden";
+        path = "/mnt/storage/containers/vaultwarden/data/db.sqlite3";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [

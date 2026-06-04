@@ -60,6 +60,15 @@ in
       }
     ];
 
+    myServices.backups.postgresqlDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "spliit";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "spliit";
+      password = "\${SPLIIT_DB_PASSWORD}";
+      useDumpContainer = true;
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

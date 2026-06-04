@@ -171,30 +171,6 @@
         }
       ];
 
-      mariadbDatabases = [
-        {
-          name = "julweb";
-          hostname = "127.0.0.1";
-          port = 3306;
-          username = "julweb";
-          password = "\${JULWEB_DB_PASSWORD}";
-          options = "--skip-ssl";
-        }
-      ];
-
-      postgresqlDatabases = [
-        # umami is PG18; dump via a temp client container (borgmatic's pg_dump is 17.x).
-        # https://github.com/borgmatic-collective/docker-borgmatic/issues/444
-        {
-          name = "umami";
-          hostname = "127.0.0.1";
-          port = 5432;
-          username = "umami";
-          password = "\${UMAMI_DB_PASSWORD}";
-          useDumpContainer = true;
-        }
-      ];
-
       networks = [
         { name = "borgmatic"; }
       ];

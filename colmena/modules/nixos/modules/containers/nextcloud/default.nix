@@ -76,6 +76,15 @@ in
       }
     ];
 
+    myServices.backups.mariadbDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "nextcloud";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "nextcloud";
+      password = "\${NEXTCLOUD_DB_PASSWORD}";
+      options = "--skip-ssl";
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

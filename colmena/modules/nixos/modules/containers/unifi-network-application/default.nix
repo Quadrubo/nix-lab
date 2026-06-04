@@ -87,6 +87,15 @@ in
       }
     ];
 
+    myServices.backups.mongodbDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "unifi";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "unifi";
+      password = "\${UNIFI_MONGO_PASSWORD}";
+      authentication_database = "admin";
+    };
+
     myServices.traefik.serversTransports = {
       unifi-network-application = {
         insecureSkipVerify = true;

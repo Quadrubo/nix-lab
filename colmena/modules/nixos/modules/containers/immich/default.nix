@@ -89,6 +89,14 @@ in
       }
     ];
 
+    myServices.backups.postgresqlDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "immich";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "postgres";
+      password = "\${IMMICH_DB_PASSWORD}";
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

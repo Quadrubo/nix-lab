@@ -51,6 +51,13 @@ in
       }
     ];
 
+    myServices.backups.sqliteDatabases = [
+      {
+        name = "forgejo";
+        path = "/mnt/storage/containers/forgejo/data/gitea/forgejo.db";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [

@@ -66,6 +66,15 @@ in
       }
     ];
 
+    myServices.backups.postgresqlDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "kitchenowl";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "kitchenowl";
+      password = "\${KITCHENOWL_DB_PASSWORD}";
+      useDumpContainer = true;
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

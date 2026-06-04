@@ -55,6 +55,13 @@ in
       }
     ];
 
+    myServices.backups.sqliteDatabases = [
+      {
+        name = "gitea-mirror";
+        path = "/mnt/storage/containers/gitea-mirror/data/gitea-mirror.db";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [

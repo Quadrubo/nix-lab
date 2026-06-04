@@ -89,6 +89,15 @@ in
       }
     ];
 
+    myServices.backups.postgresqlDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "open_archive";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "admin";
+      password = "\${OPEN_ARCHIVER_DB_PASSWORD}";
+      useDumpContainer = true;
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

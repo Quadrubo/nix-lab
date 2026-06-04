@@ -125,6 +125,15 @@ in
       }
     ];
 
+    myServices.backups.mariadbDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "panel";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "pelican";
+      password = "\${PELICAN_DB_PASSWORD}";
+      options = "--skip-ssl";
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

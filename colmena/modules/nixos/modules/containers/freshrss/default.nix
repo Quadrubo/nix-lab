@@ -60,6 +60,15 @@ in
       }
     ];
 
+    myServices.backups.postgresqlDatabases = optional (cfg.dbLocalhostPort != null) {
+      name = "freshrss";
+      hostname = "127.0.0.1";
+      port = cfg.dbLocalhostPort;
+      username = "freshrss";
+      password = "\${FRESHRSS_DB_PASSWORD}";
+      useDumpContainer = true;
+    };
+
     myServices.podman = {
       enable = true;
       networks = [

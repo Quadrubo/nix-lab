@@ -560,6 +560,21 @@ in
       url = "https://${instanceCfg.domain}";
     }) enabledInstances;
 
+    myServices.backups.postgresqlDatabases = concatMap (
+      name:
+      let
+        instanceCfg = enabledInstances.${name};
+      in
+      optional (instanceCfg.dbLocalhostPort != null) {
+        name = "paperless";
+        hostname = "127.0.0.1";
+        port = instanceCfg.dbLocalhostPort;
+        username = "paperless";
+        password = "\${PAPERLESS_${toUpper name}_DB_PASSWORD}";
+        useDumpContainer = true;
+      }
+    ) (attrNames enabledInstances);
+
     environment.systemPackages =
       mkIf (any (instanceCfg: instanceCfg.gpg.enable) (attrValues enabledInstances))
         [

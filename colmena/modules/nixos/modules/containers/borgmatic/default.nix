@@ -10,7 +10,11 @@ with lib;
 let
   cfg = config.myServices.borgmatic;
 
-  usesPgDumpContainer = any (db: db.useDumpContainer or false) cfg.postgresqlDatabases;
+  # Databases are contributed by the individual service modules and aggregated
+  # into myServices.backups.* on this host.
+  backups = config.myServices.backups;
+
+  usesPgDumpContainer = any (db: db.useDumpContainer or false) backups.postgresqlDatabases;
 
   # Run pg_dump/pg_restore/psql in a throwaway PostgreSQL client container (via the
   # host podman socket) so the client version matches the server, even though the
@@ -31,7 +35,7 @@ let
       }
     else
       db
-  ) cfg.postgresqlDatabases;
+  ) backups.postgresqlDatabases;
 
   crontabFile = pkgs.writeText "crontab.txt" ''
     ${cfg.cronSchedule} PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --stats -v 0 2>&1
@@ -40,10 +44,10 @@ let
   configFile = pkgs.writeText "config.yaml" (
     builtins.toJSON {
       source_directories = cfg.sourceDirectories;
-      mariadb_databases = cfg.mariadbDatabases;
+      mariadb_databases = backups.mariadbDatabases;
       postgresql_databases = postgresqlDatabases;
-      mongodb_databases = cfg.mongodbDatabases;
-      sqlite_databases = cfg.sqliteDatabases;
+      mongodb_databases = backups.mongodbDatabases;
+      sqlite_databases = backups.sqliteDatabases;
       repositories = cfg.repositories;
 
       one_file_system = true;
@@ -156,30 +160,6 @@ in
       type = types.listOf types.str;
       default = [ ];
       description = "List of directories to backup";
-    };
-
-    mariadbDatabases = mkOption {
-      type = types.listOf types.attrs;
-      default = [ ];
-      description = "List of MariaDB databases to backup (name, hostname, username, password)";
-    };
-
-    postgresqlDatabases = mkOption {
-      type = types.listOf types.attrs;
-      default = [ ];
-      description = "List of PostgreSQL databases to backup (name, hostname, port, username, password)";
-    };
-
-    mongodbDatabases = mkOption {
-      type = types.listOf types.attrs;
-      default = [ ];
-      description = "List of MongoDB databases to backup (name, hostname, port, username, password, authentication_database)";
-    };
-
-    sqliteDatabases = mkOption {
-      type = types.listOf types.attrs;
-      default = [ ];
-      description = "List of SQLite databases to backup (name, path)";
     };
 
     sshCommand = mkOption {

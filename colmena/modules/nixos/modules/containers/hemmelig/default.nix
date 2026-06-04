@@ -43,6 +43,13 @@ in
       }
     ];
 
+    myServices.backups.sqliteDatabases = [
+      {
+        name = "hemmelig";
+        path = "/mnt/storage/containers/hemmelig/database/hemmelig.db";
+      }
+    ];
+
     myServices.podman = {
       enable = true;
       networks = [
