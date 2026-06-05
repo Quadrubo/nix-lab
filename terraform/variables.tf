@@ -66,6 +66,11 @@ variable "domains" {
       ttl         = optional(number, 1)
       proxied     = optional(bool, false)
       priority    = optional(number)
+      data = optional(object({
+        flags = optional(number)
+        tag   = optional(string)
+        value = optional(string)
+      }))
     }))
   }))
 }

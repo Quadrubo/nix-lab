@@ -132,6 +132,7 @@ locals {
         ttl         = record.ttl
         proxied     = record.proxied
         priority    = record.priority
+        data        = record.data
       }
     ]
   ])
@@ -153,4 +154,5 @@ resource "cloudflare_dns_record" "this" {
   ttl      = each.value.ttl
   proxied  = each.value.proxied
   priority = each.value.priority
+  data     = each.value.data
 }
