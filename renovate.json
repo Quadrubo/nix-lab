@@ -11,6 +11,12 @@
       "password": "{{ secrets.GHCR_TOKEN }}"
     }
   ],
+  "packageRules": [
+    {
+      "matchDatasources": ["docker"],
+      "pinDigests": false
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
