@@ -47,7 +47,15 @@
               sops
               ssh-to-age
               compose2nix
+              nixfmt-rfc-style
             ];
+
+            # Point git at the tracked hooks so a fresh clone needs no setup.
+            shellHook = ''
+              if git rev-parse --git-dir > /dev/null 2>&1; then
+                git config --local core.hooksPath .githooks
+              fi
+            '';
           };
         }
       );

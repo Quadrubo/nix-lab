@@ -1,16 +1,27 @@
 #!/usr/bin/env bash
-# Block commits with unformatted .nix files.
+# Block commits with unformatted .nix or terraform files.
+# Tools (nixfmt, terraform) are provided by the flake devShell.
 
-staged=$(git diff --cached --name-only --diff-filter=ACM -- '*.nix')
+staged_nix=$(git diff --cached --name-only --diff-filter=ACM -- '*.nix')
 
-if [ -z "$staged" ]; then
-  exit 0
+if [ -n "$staged_nix" ]; then
+  if ! nixfmt --check $staged_nix 2>&1; then
+    echo "" >&2
+    echo "ERROR: Staged .nix files are not formatted." >&2
+    echo "Fix with:" >&2
+    echo "  nixfmt $staged_nix" >&2
+    exit 1
+  fi
 fi
 
-if ! nix run nixpkgs#nixfmt-rfc-style -- --check $staged 2>&1; then
-  echo "" >&2
-  echo "ERROR: Staged .nix files are not formatted." >&2
-  echo "Fix with:" >&2
-  echo "  nix run nixpkgs#nixfmt-rfc-style -- $staged" >&2
-  exit 1
+staged_tf=$(git diff --cached --name-only --diff-filter=ACM -- '*.tf' '*.tfvars')
+
+if [ -n "$staged_tf" ]; then
+  if ! terraform fmt -check -recursive terraform/ 2>&1; then
+    echo "" >&2
+    echo "ERROR: Staged terraform files are not formatted." >&2
+    echo "Fix with:" >&2
+    echo "  terraform fmt terraform/" >&2
+    exit 1
+  fi
 fi
