@@ -25,7 +25,7 @@ in
 
     webImage = mkOption {
       type = types.str;
-      default = "tombursch/kitchenowl-web:v0.7.8"; # renovate: docker
+      default = "tombursch/kitchenowl-web:v0.7.9"; # renovate: docker
     };
 
     backendImage = mkOption {
