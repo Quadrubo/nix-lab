@@ -3,6 +3,14 @@
   "extends": ["config:best-practices"],
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
+  "hostRules": [
+    {
+      "matchHost": "ghcr.io",
+      "hostType": "docker",
+      "username": "Quadrubo",
+      "password": "{{ secrets.GHCR_TOKEN }}"
+    }
+  ],
   "customManagers": [
     {
       "customType": "regex",
@@ -10,7 +18,7 @@
         "/modules/nixos/modules/containers/.*/default\\.nix$/"
       ],
       "matchStrings": [
-        "default\\s*=\\s*\"(?<depName>.*?):(?<currentValue>[^:\"]+)\";\\s*#\\s*renovate:\\s*docker"
+        "default\\s*=\\s*\"(?<depName>.*?):(?<currentValue>[^:\"@]+)(?:@(?<currentDigest>sha256:[a-f0-9]+))?\";\\s*#\\s*renovate:\\s*docker"
       ],
       "datasourceTemplate": "docker",
       "versioningTemplate": "docker"
