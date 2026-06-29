@@ -265,6 +265,9 @@
       key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPP0vtzOrcit3+zUzMAQ80IK04Og+WJ0O3hMnaF4FLiG";
       hubUrl = "https://beszel.l.qudr.de";
 
+      # TODO: revert to info once beszel podman doesn't disappear anymore
+      logLevel = "debug";
+
       extraFilesystems = [
         {
           name = "zfs";

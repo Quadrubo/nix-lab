@@ -43,6 +43,17 @@ in
         description = "URL of the Beszel Hub.";
       };
 
+      logLevel = mkOption {
+        type = types.enum [
+          "debug"
+          "info"
+          "warn"
+          "error"
+        ];
+        default = "info";
+        description = "Agent log level, passed via the LOG_LEVEL env var.";
+      };
+
       extraFilesystems = mkOption {
         type = types.listOf (
           types.submodule {
@@ -122,6 +133,7 @@ in
         PORT = toString cfg.port;
         KEY = cfg.key;
         HUB_URL = cfg.hubUrl;
+        LOG_LEVEL = cfg.logLevel;
         DOCKER_HOST = "unix:///run/user/1000/podman/podman.sock";
       };
 
