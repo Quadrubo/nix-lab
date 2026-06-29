@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/quadrubo/tracksync/server:1.0.1"; # renovate: docker
+      default = "ghcr.io/quadrubo/tracksync/server:1.1.0"; # renovate: docker
     };
 
     domain = mkOption {
@@ -81,6 +81,11 @@ in
       environment = {
         ACCOUNT__0__DEVICE_ID = "columbus-p10-pro-julian";
         ACCOUNT__0__TARGET_URL = "http://dawarich-app:3000";
+        # Split tracks at the Columbus POI buttons (rows tagged "C" or "D") and
+        # tag each leg with a stable tracker_id so Dawarich keeps the splits
+        # separate instead of re-merging them by time gap.
+        ACCOUNT__0__MARKERS = "C:split,D:split";
+        TARGET__DAWARICH__EMIT_TRACKER_ID = "true";
         CLIENT__0__ID = "framy";
         CLIENT__0__ALLOWED_DEVICES = "columbus-p10-pro-julian";
         CLIENT__1__ID = "compy";
