@@ -116,6 +116,11 @@ in
         MIRROR_STARRED = if cfg.starredLists != [ ] then "true" else "false";
         AUTO_MIRROR_STARRED = if cfg.starredLists != [ ] then "true" else "false";
         MIRROR_STARRED_LISTS = lib.concatStringsSep "," cfg.starredLists;
+        # Code-only for starred repos; mirroring their full issue/PR history is too costly.
+        SKIP_STARRED_ISSUES = "true";
+        # Mirror starred repos under their owner org, not a shared "starred" org. The
+        # dedicated-org path has a unique-name bug that re-duplicates repos every sync.
+        STARRED_REPOS_MODE = "preserve-owner";
         MIRROR_METADATA = "true";
         MIRROR_ISSUES = "true";
         MIRROR_PULL_REQUESTS = "true";
