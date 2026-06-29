@@ -83,6 +83,12 @@
   networking.hostId = "ccb0cce0";
   console.keyMap = "de";
 
+  # Pin pasta to the LAN interface so it doesn't latch onto wg0
+  virtualisation.containers.containersConf.settings.network.pasta_options = [
+    "--interface"
+    "enp4s0"
+  ];
+
   # Sops
   sops.defaultSopsFile = ../../secrets/servy.yaml;
   sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
