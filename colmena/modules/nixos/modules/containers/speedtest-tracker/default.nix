@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "lscr.io/linuxserver/speedtest-tracker:version-v1.13.5"; # renovate: docker
+      default = "lscr.io/linuxserver/speedtest-tracker:version-v1.14.5"; # renovate: docker
     };
 
     dbImage = mkOption {
