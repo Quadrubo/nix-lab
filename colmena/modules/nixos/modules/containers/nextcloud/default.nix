@@ -40,7 +40,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "mariadb:10.11.17"; # renovate: docker
+      default = "mariadb:10.11.18"; # renovate: docker
     };
 
     redisImage = mkOption {
