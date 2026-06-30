@@ -15,6 +15,18 @@
     {
       "matchDatasources": ["docker"],
       "pinDigests": false
+    },
+    {
+      "description": "linuxserver.io version tags",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["/^lscr\\.io/linuxserver//"],
+      "versioning": "regex:^(?:(?<compatibility>.*?)-)?(?<major>v?\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)[\\.-]*r?(?<build>\\d+)*-*r?(?<release>\\w+)*"
+    },
+    {
+      "description": "linuxserver.io double-v version tags",
+      "matchDatasources": ["docker"],
+      "matchPackageNames": ["/^lscr\\.io/linuxserver/speedtest-tracker$/"],
+      "versioning": "regex:^(?<compatibility>.*?)-v(?<major>v?\\d+)\\.(?<minor>\\d+)\\.(?<patch>\\d+)[\\.-]*r?(?<build>\\d+)*-*r?(?<release>\\w+)*"
     }
   ],
   "customManagers": [
