@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/quadrubo/julweb:v1.1.0"; # renovate: docker
+      default = "ghcr.io/quadrubo/julweb:v1.1.1"; # renovate: docker
     };
 
     domain = mkOption {
