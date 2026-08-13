@@ -42,7 +42,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:18.4-alpine"; # renovate: docker
+      default = "postgres:18.6-alpine"; # renovate: docker
     };
 
     valkeyImage = mkOption {
