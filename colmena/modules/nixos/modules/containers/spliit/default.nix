@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/spliit-app/spliit:1.19.0"; # renovate: docker
+      default = "ghcr.io/spliit-app/spliit:1.23.1"; # renovate: docker
     };
 
     dbImage = mkOption {
