@@ -47,7 +47,7 @@ let
 
         scanImage = mkOption {
           type = types.str;
-          default = "manuc66/node-hp-scan-to:1.10.0"; # renovate: docker
+          default = "manuc66/node-hp-scan-to:1.11.1"; # renovate: docker
         };
 
         appTitle = mkOption {
