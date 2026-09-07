@@ -197,6 +197,7 @@ in
       environment = {
         MYSQL_DATABASE = "panel";
         MYSQL_USER = "pelican";
+        MARIADB_AUTO_UPGRADE = "1";
       };
 
       environmentFiles = [ config.sops.secrets."pelican-db_env".path ];

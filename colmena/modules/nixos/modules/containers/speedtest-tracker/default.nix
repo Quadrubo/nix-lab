@@ -137,6 +137,7 @@ in
         MARIADB_DATABASE = "speedtest_tracker";
         MARIADB_USER = "speedtest";
         MARIADB_RANDOM_ROOT_PASSWORD = "true";
+        MARIADB_AUTO_UPGRADE = "1";
       };
 
       environmentFiles = [ config.sops.secrets."speedtest-tracker-db_env".path ];
