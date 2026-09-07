@@ -40,7 +40,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "mariadb:12.3.3"; # renovate: docker
+      default = "mariadb:11.8.9"; # renovate: docker
     };
 
     redisImage = mkOption {
@@ -140,6 +140,7 @@ in
       environment = {
         MARIADB_DATABASE = "nextcloud";
         MARIADB_USER = "nextcloud";
+        MARIADB_AUTO_UPGRADE = "1";
       };
 
       environmentFiles = [ config.sops.secrets."nextcloud-db_env".path ];

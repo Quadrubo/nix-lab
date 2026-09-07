@@ -106,6 +106,7 @@ in
       environment = {
         MYSQL_DATABASE = "julweb";
         MYSQL_USER = "julweb";
+        MARIADB_AUTO_UPGRADE = "1";
       };
 
       environmentFiles = [ config.sops.secrets."julweb-db_env".path ];
