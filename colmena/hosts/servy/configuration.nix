@@ -218,6 +218,10 @@
           "192.168.50.9/32" # WG  - Lara C. iPad
         ];
 
+        helen = [
+          "192.168.50.13/32" # WG - Helen iPad
+        ];
+
         publy = [
           "192.168.60.1/32" # WG - Publy (Gatus monitoring)
         ];
