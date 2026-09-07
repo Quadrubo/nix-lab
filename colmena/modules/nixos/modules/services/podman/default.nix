@@ -102,6 +102,10 @@ in
   };
 
   config = mkIf cfg.enable {
+    systemd.tmpfiles.rules = [
+      "d /mnt/storage/cache 0755 container-user users -"
+    ];
+
     systemd.services = networkServices // loginService;
   };
 }
