@@ -618,6 +618,8 @@
         "publy"
       ];
       dbLocalhostPort = 27017;
+      memLimit = "512";
+      memStartup = "256";
     };
 
     vaultwarden = {
