@@ -35,6 +35,12 @@ in
       description = "Update strategy for Photon index (PARALLEL, SEQUENTIAL, or DISABLED).";
     };
 
+    dataPath = mkOption {
+      type = types.str;
+      default = "/mnt/storage/cache/photon/data";
+      description = "Path to store the Photon search index.";
+    };
+
     updateInterval = mkOption {
       type = types.str;
       default = "30d";
@@ -58,8 +64,8 @@ in
 
     # Directories
     systemd.tmpfiles.rules = [
-      "d /mnt/storage/containers/photon 0755 container-user users -"
-      "d /mnt/storage/containers/photon/data 0755 container-user users -"
+      "d /mnt/storage/cache/photon 0755 container-user users -"
+      "d ${cfg.dataPath} 0755 container-user users -"
     ];
 
     virtualisation.oci-containers.containers.photon = {
@@ -82,7 +88,7 @@ in
       };
 
       volumes = [
-        "/mnt/storage/containers/photon/data:/photon/data"
+        "${cfg.dataPath}:/photon/data"
       ];
 
       labels =
