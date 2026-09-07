@@ -9,6 +9,8 @@ with lib;
 let
   cfg = config.myServices.dawarich;
 
+  photonEnabled = config.myServices.photon.enable;
+
   baseEnv = {
     RAILS_ENV = "production";
     REDIS_URL = "redis://dawarich-redis:6379";
@@ -23,10 +25,12 @@ let
     RAILS_LOG_TO_STDOUT = "true";
     SELF_HOSTED = "true";
     STORE_GEODATA = "true";
-    PHOTON_API_HOST = "photon:2322";
-    PHOTON_API_USE_HTTPS = "false";
     BROUTER_URL = "https://brouter.de/brouter";
     BROUTER_DEFAULT_MODE = "Rail";
+  }
+  // optionalAttrs photonEnabled {
+    PHOTON_API_HOST = "photon:2322";
+    PHOTON_API_USE_HTTPS = "false";
   };
 in
 {
@@ -223,7 +227,9 @@ in
       extraOptions = [
         "--network=traefik"
         "--network=dawarich"
-        "--network=photon"
+      ]
+      ++ optional photonEnabled "--network=photon"
+      ++ [
         ''--health-cmd=sh -c "wget -qO - http://127.0.0.1:3000/api/v1/health | grep -q '\"status\".*:.*\"ok\"'"''
         "--health-interval=10s"
         "--health-retries=30"
@@ -287,7 +293,9 @@ in
       extraOptions = [
         "--network=dawarich"
         "--network=immich"
-        "--network=photon"
+      ]
+      ++ optional photonEnabled "--network=photon"
+      ++ [
         "--health-cmd=pgrep -f sidekiq"
         "--health-interval=10s"
         "--health-retries=30"
@@ -330,32 +338,32 @@ in
 
     systemd.services."podman-dawarich-app".after = [
       "podman-network-dawarich-container-user.service"
-      "podman-network-photon-container-user.service"
       "podman-dawarich-db.service"
       "podman-dawarich-redis.service"
-    ];
+    ]
+    ++ optional photonEnabled "podman-network-photon-container-user.service";
     systemd.services."podman-dawarich-app".requires = [
       "podman-network-dawarich-container-user.service"
-      "podman-network-photon-container-user.service"
       "podman-dawarich-db.service"
       "podman-dawarich-redis.service"
-    ];
+    ]
+    ++ optional photonEnabled "podman-network-photon-container-user.service";
 
     systemd.services."podman-dawarich-sidekiq".after = [
       "podman-network-dawarich-container-user.service"
       "podman-network-immich-container-user.service"
-      "podman-network-photon-container-user.service"
       "podman-dawarich-db.service"
       "podman-dawarich-redis.service"
       "podman-dawarich-app.service"
-    ];
+    ]
+    ++ optional photonEnabled "podman-network-photon-container-user.service";
     systemd.services."podman-dawarich-sidekiq".requires = [
       "podman-network-dawarich-container-user.service"
       "podman-network-immich-container-user.service"
-      "podman-network-photon-container-user.service"
       "podman-dawarich-db.service"
       "podman-dawarich-redis.service"
       "podman-dawarich-app.service"
-    ];
+    ]
+    ++ optional photonEnabled "podman-network-photon-container-user.service";
   };
 }

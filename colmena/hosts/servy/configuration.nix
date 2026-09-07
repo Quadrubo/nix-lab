@@ -377,7 +377,7 @@
     };
 
     photon = {
-      enable = true;
+      enable = false;
 
       domain = "photon.l.qudr.de";
     };
