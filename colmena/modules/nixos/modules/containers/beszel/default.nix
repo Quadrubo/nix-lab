@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "henrygd/beszel:0.18.7"; # renovate: docker
+      default = "henrygd/beszel:0.19.0"; # renovate: docker
     };
 
     domain = mkOption {
