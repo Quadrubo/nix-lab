@@ -137,6 +137,9 @@ in
         MARIADB_DATABASE = "speedtest_tracker";
         MARIADB_USER = "speedtest";
         MARIADB_RANDOM_ROOT_PASSWORD = "true";
+        # Run mariadb-upgrade on a major version bump and create the
+        # healthcheck users. The image skips both without this.
+        MARIADB_AUTO_UPGRADE = "1";
       };
 
       environmentFiles = [ config.sops.secrets."speedtest-tracker-db_env".path ];

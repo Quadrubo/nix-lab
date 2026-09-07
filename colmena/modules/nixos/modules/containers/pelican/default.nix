@@ -197,6 +197,9 @@ in
       environment = {
         MYSQL_DATABASE = "panel";
         MYSQL_USER = "pelican";
+        # Run mariadb-upgrade on a major version bump and create the
+        # healthcheck users. The image skips both without this.
+        MARIADB_AUTO_UPGRADE = "1";
       };
 
       environmentFiles = [ config.sops.secrets."pelican-db_env".path ];
