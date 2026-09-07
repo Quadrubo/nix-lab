@@ -416,7 +416,7 @@
     };
 
     gitea-mirror = {
-      enable = true;
+      enable = false;
       sopsFile = ../../secrets/servy.yaml;
 
       domain = "gitea-mirror.l.qudr.de";
