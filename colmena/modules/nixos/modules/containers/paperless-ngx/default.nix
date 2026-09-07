@@ -227,6 +227,7 @@ let
 
         environment = {
           PAPERLESS_REDIS = "redis://${prefix}-redis:6379";
+          PAPERLESS_DBENGINE = "postgresql";
           PAPERLESS_DBHOST = "${prefix}-db";
           PAPERLESS_DBPORT = "5432";
           PAPERLESS_DBNAME = "paperless";
@@ -238,7 +239,6 @@ let
           PAPERLESS_APP_TITLE = instanceCfg.appTitle;
           PAPERLESS_CONSUMER_ENABLE_BARCODES = "true";
           PAPERLESS_CONSUMER_ENABLE_ASN_BARCODE = "true";
-          PAPERLESS_CONSUMER_BARCODE_SCANNER = "ZXING";
         }
         // optionalAttrs instanceCfg.gpg.enable {
           PAPERLESS_ENABLE_GPG_DECRYPTOR = "true";
