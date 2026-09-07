@@ -7,3 +7,6 @@
 *.tfstate.backup
 secrets.auto.tfvars
 backend.conf
+
+# sops (decrypted working copies, e.g. from the VS Code extension)
+.decrypted~*

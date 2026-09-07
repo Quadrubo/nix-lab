@@ -25,3 +25,27 @@ if [ -n "$staged_tf" ]; then
     exit 1
   fi
 fi
+
+# Block decrypted sops working copies. These are plaintext secrets and must
+# never reach a commit, even if force-added past .gitignore.
+staged_decrypted=$(git diff --cached --name-only --diff-filter=ACM | grep -E '(^|/)\.decrypted~' || true)
+
+if [ -n "$staged_decrypted" ]; then
+  echo "ERROR: Refusing to commit decrypted sops files:" >&2
+  echo "$staged_decrypted" | sed 's/^/  /' >&2
+  echo "" >&2
+  echo "These contain plaintext secrets. Remove them with:" >&2
+  echo "$staged_decrypted" | sed 's/^/  rm /' >&2
+  exit 1
+fi
+
+# Anything staged under a secrets/ directory must still be sops-encrypted.
+staged_secrets=$(git diff --cached --name-only --diff-filter=ACM -- '*secrets/*.yaml' || true)
+
+for f in $staged_secrets; do
+  if ! git show ":$f" | grep -q 'ENC\['; then
+    echo "ERROR: $f is staged but has no sops ENC[...] markers." >&2
+    echo "It looks decrypted. Re-encrypt it before committing." >&2
+    exit 1
+  fi
+done
