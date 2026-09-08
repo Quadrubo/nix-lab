@@ -2,9 +2,7 @@
   description = "My NixOS Cloud Infrastructure";
 
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
-    # TODO: switch back to 25.11 once this backport was merged https://github.com/NixOS/nixpkgs/pull/483309
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
     flake-parts.url = "github:hercules-ci/flake-parts";
     colmena.url = "github:zhaofengli/colmena";
     disko.url = "github:nix-community/disko";
