@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "freshrss/freshrss:1.29.1-alpine"; # renovate: docker
+      default = "freshrss/freshrss:1.30.0-alpine"; # renovate: docker
     };
 
     dbImage = mkOption {
