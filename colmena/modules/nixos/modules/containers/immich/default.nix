@@ -25,12 +25,12 @@ in
 
     serverImage = mkOption {
       type = types.str;
-      default = "ghcr.io/immich-app/immich-server:v3.1.0"; # renovate: docker
+      default = "ghcr.io/immich-app/immich-server:v3.2.0"; # renovate: docker
     };
 
     machineLearningImage = mkOption {
       type = types.str;
-      default = "ghcr.io/immich-app/immich-machine-learning:v3.1.0"; # renovate: docker
+      default = "ghcr.io/immich-app/immich-machine-learning:v3.2.0"; # renovate: docker
     };
 
     redisImage = mkOption {
