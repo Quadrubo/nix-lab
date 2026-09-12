@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "codeberg.org/forgejo/forgejo:15.0.7"; # renovate: docker
+      default = "codeberg.org/forgejo/forgejo:15.0.8"; # renovate: docker
     };
 
     domain = mkOption {
