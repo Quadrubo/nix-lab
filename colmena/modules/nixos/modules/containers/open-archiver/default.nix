@@ -52,7 +52,7 @@ in
 
     meilisearchImage = mkOption {
       type = types.str;
-      default = "getmeili/meilisearch:v1.53.2"; # renovate: docker
+      default = "getmeili/meilisearch:v1.54.0"; # renovate: docker
     };
 
     appDataPath = mkOption {
