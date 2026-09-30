@@ -93,6 +93,28 @@ in
       description = "List of Podman networks to create automatically (per user).";
     };
 
+    mariadbTcLogGuard = mkOption {
+      type = types.package;
+      internal = true;
+      description = ''
+        Helper for a MariaDB container's ExecStartPre. Takes the host path of
+        the container's tc.log and moves it aside if its magic header is not
+        the expected fe230574, which otherwise makes mariadbd refuse to start
+        and leaves the unit restart-looping. The file only holds in-flight
+        two-phase-commit transaction ids, so discarding a broken one is safe.
+      '';
+      default = pkgs.writeShellScript "mariadb-tc-log-guard" ''
+        set -u
+        tclog="$1"
+        [ -f "$tclog" ] || exit 0
+        magic=$(${pkgs.coreutils}/bin/od -An -N4 -tx1 "$tclog" | ${pkgs.coreutils}/bin/tr -d " \n")
+        [ "$magic" = "fe230574" ] && exit 0
+        bak="$tclog.bad-$(${pkgs.coreutils}/bin/date +%Y%m%dT%H%M%S)"
+        echo "tc.log magic is '$magic', expected 'fe230574'; moving to $bak" >&2
+        ${pkgs.coreutils}/bin/mv "$tclog" "$bak"
+      '';
+    };
+
     ghcr = {
       enable = mkEnableOption "Login to GHCR";
       username = mkOption {

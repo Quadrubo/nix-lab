@@ -116,6 +116,10 @@ in
       ];
     };
 
+    systemd.services."podman-julweb-db".serviceConfig.ExecStartPre = mkAfter [
+      "${config.myServices.podman.mariadbTcLogGuard} /mnt/storage/containers/julweb-db/mysql/tc.log"
+    ];
+
     systemd.services."podman-julweb-db".after = [ "podman-network-julweb-container-user.service" ];
     systemd.services."podman-julweb-db".requires = [ "podman-network-julweb-container-user.service" ];
 
