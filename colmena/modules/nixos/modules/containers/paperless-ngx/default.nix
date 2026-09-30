@@ -410,6 +410,11 @@ let
       gpgSetup = optionalAttrs instanceCfg.gpg.enable {
         "paperless-ngx-${name}-gpg-setup" = {
           description = "Paperless-ngx GPG setup for ${name}";
+          after = [
+            "linger-users.service"
+            "user@1000.service"
+          ];
+          requires = [ "user@1000.service" ];
           serviceConfig = {
             Type = "oneshot";
             User = "container-user";

@@ -36,8 +36,13 @@ let
   loginService = optionalAttrs cfg.ghcr.enable {
     "podman-registry-login-ghcr" = {
       description = "Login to GHCR for Podman";
-      after = [ "network-online.target" ];
+      after = [
+        "network-online.target"
+        "linger-users.service"
+        "user@1000.service"
+      ];
       wants = [ "network-online.target" ];
+      requires = [ "user@1000.service" ];
       wantedBy = [ "multi-user.target" ];
       # required so podman can find the SUID newuidmap binary at boot
       path = [ "/run/wrappers" ];
