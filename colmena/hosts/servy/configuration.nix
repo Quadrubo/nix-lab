@@ -577,7 +577,6 @@
         "julian"
         "publy"
       ];
-      dbLocalhostPort = 3309;
     };
 
     spliit = {

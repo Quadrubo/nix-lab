@@ -23,11 +23,6 @@ in
       default = "lscr.io/linuxserver/speedtest-tracker:version-v1.15.0"; # renovate: docker
     };
 
-    dbImage = mkOption {
-      type = types.str;
-      default = "mariadb:12.3.3"; # renovate: docker
-    };
-
     domain = mkOption {
       type = types.str;
       description = "Domain used for Speedtest Tracker.";
@@ -50,18 +45,6 @@ in
       description = "Path to store Speedtest Tracker config.";
     };
 
-    dbPath = mkOption {
-      type = types.str;
-      default = "/mnt/storage/containers/speedtest-tracker-db/mysql";
-      description = "Path to store Speedtest Tracker database data.";
-    };
-
-    dbLocalhostPort = mkOption {
-      type = types.nullOr types.port;
-      default = null;
-      description = "When set, publish the DB port to this loopback port on the host.";
-    };
-
     allowlistGroups = mkOption {
       type = types.listOf types.str;
       default = [ ];
@@ -77,15 +60,6 @@ in
         url = "https://${cfg.domain}";
       }
     ];
-
-    myServices.backups.mariadbDatabases = optional (cfg.dbLocalhostPort != null) {
-      name = "speedtest_tracker";
-      hostname = "127.0.0.1";
-      port = cfg.dbLocalhostPort;
-      username = "speedtest";
-      password = "\${SPEEDTEST_TRACKER_DB_PASSWORD}";
-      options = "--skip-ssl";
-    };
 
     myServices.podman = {
       enable = true;
@@ -104,48 +78,9 @@ in
       ];
     };
 
-    sops.secrets."speedtest-tracker-db_env" = {
-      sopsFile = cfg.sopsFile;
-      format = "yaml";
-      key = "speedtest-tracker-db_env";
-      owner = "container-user";
-      restartUnits = [
-        "podman-speedtest-tracker-db.service"
-      ];
-    };
-
     systemd.tmpfiles.rules = [
       "d ${cfg.configPath} 0755 container-user users -"
-      "d ${cfg.dbPath} 0755 container-user users -"
     ];
-
-    virtualisation.oci-containers.containers.speedtest-tracker-db = {
-      image = cfg.dbImage;
-      autoStart = true;
-
-      podman.user = "container-user";
-
-      extraOptions = [
-        "--network=speedtest-tracker"
-        # Allow MariaDB time to shut down cleanly to avoid tc.log corruption
-        "--stop-timeout=30"
-      ];
-
-      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
-
-      environment = {
-        MARIADB_DATABASE = "speedtest_tracker";
-        MARIADB_USER = "speedtest";
-        MARIADB_RANDOM_ROOT_PASSWORD = "true";
-        MARIADB_AUTO_UPGRADE = "1";
-      };
-
-      environmentFiles = [ config.sops.secrets."speedtest-tracker-db_env".path ];
-
-      volumes = [
-        "${cfg.dbPath}:/var/lib/mysql"
-      ];
-    };
 
     virtualisation.oci-containers.containers.speedtest-tracker = {
       image = cfg.image;
@@ -162,21 +97,18 @@ in
         PUID = "1000";
         PGID = "1000";
         TZ = cfg.timeZone;
-        DB_CONNECTION = "mysql";
-        DB_HOST = "speedtest-tracker-db";
-        DB_PORT = "3306";
-        DB_DATABASE = "speedtest_tracker";
-        DB_USERNAME = "speedtest";
+        DB_CONNECTION = "sqlite";
         SPEEDTEST_SCHEDULE = cfg.schedule;
       };
 
       environmentFiles = [ config.sops.secrets."speedtest-tracker_env".path ];
 
       volumes = [
-        "${cfg.configPath}:/config"
+        # :U so podman chowns the mount to the container's PUID. SQLite needs to
+        # create its journal alongside the database, which requires write access
+        # on the directory itself, not just the file.
+        "${cfg.configPath}:/config:U"
       ];
-
-      dependsOn = [ "speedtest-tracker-db" ];
 
       labels =
         let
@@ -197,20 +129,11 @@ in
         };
     };
 
-    systemd.services."podman-speedtest-tracker-db".after = [
-      "podman-network-speedtest-tracker-container-user.service"
-    ];
-    systemd.services."podman-speedtest-tracker-db".requires = [
-      "podman-network-speedtest-tracker-container-user.service"
-    ];
-
     systemd.services."podman-speedtest-tracker".after = [
       "podman-network-speedtest-tracker-container-user.service"
-      "podman-speedtest-tracker-db.service"
     ];
     systemd.services."podman-speedtest-tracker".requires = [
       "podman-network-speedtest-tracker-container-user.service"
-      "podman-speedtest-tracker-db.service"
     ];
   };
 }
