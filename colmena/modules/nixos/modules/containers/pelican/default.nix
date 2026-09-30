@@ -59,11 +59,6 @@ in
       default = "ghcr.io/pelican-dev/wings:v1.0.0-beta25"; # renovate: docker
     };
 
-    dbImage = mkOption {
-      type = types.str;
-      default = "mariadb:12.3.3"; # renovate: docker
-    };
-
     panelDataPath = mkOption {
       type = types.str;
       default = "/mnt/storage/containers/pelican-panel/data";
@@ -74,18 +69,6 @@ in
       type = types.str;
       default = "/mnt/storage/containers/pelican-panel/logs";
       description = "Path to store Pelican panel logs.";
-    };
-
-    dbDataPath = mkOption {
-      type = types.str;
-      default = "/mnt/storage/containers/pelican-db/mysql";
-      description = "Path to store Pelican database data.";
-    };
-
-    dbLocalhostPort = mkOption {
-      type = types.nullOr types.port;
-      default = null;
-      description = "When set, publish the DB port to this loopback port on the host (for borgmatic backups).";
     };
 
     serverPortRanges = mkOption {
@@ -125,15 +108,6 @@ in
       }
     ];
 
-    myServices.backups.mariadbDatabases = optional (cfg.dbLocalhostPort != null) {
-      name = "panel";
-      hostname = "127.0.0.1";
-      port = cfg.dbLocalhostPort;
-      username = "pelican";
-      password = "\${PELICAN_DB_PASSWORD}";
-      options = "--skip-ssl";
-    };
-
     myServices.podman = {
       enable = true;
       networks = [
@@ -149,16 +123,6 @@ in
     networking.firewall.allowedTCPPortRanges = cfg.serverPortRanges;
     networking.firewall.allowedUDPPortRanges = cfg.serverPortRanges;
 
-    sops.secrets."pelican-db_env" = {
-      sopsFile = cfg.sopsFile;
-      format = "yaml";
-      key = "pelican-db_env";
-      owner = "container-user";
-      restartUnits = [
-        "podman-pelican-db.service"
-      ];
-    };
-
     sops.secrets."pelican-panel_env" = {
       sopsFile = cfg.sopsFile;
       format = "yaml";
@@ -172,40 +136,11 @@ in
     systemd.tmpfiles.rules = [
       "d ${cfg.panelDataPath} 0755 container-user users -"
       "d ${cfg.panelLogsPath} 0755 container-user users -"
-      "d ${cfg.dbDataPath} 0755 container-user users -"
       "d /etc/pelican 0755 container-user users -"
       "d /var/lib/pelican 0755 container-user users -"
       "d /var/log/pelican 0755 container-user users -"
       "d /tmp/pelican 0755 container-user users -"
     ];
-
-    # Database
-    virtualisation.oci-containers.containers.pelican-db = {
-      image = cfg.dbImage;
-      autoStart = true;
-
-      podman.user = "container-user";
-
-      extraOptions = [
-        "--network=pelican"
-        # Allow MariaDB time to shut down cleanly to avoid tc.log corruption
-        "--stop-timeout=30"
-      ];
-
-      ports = optional (cfg.dbLocalhostPort != null) "127.0.0.1:${toString cfg.dbLocalhostPort}:3306";
-
-      environment = {
-        MYSQL_DATABASE = "panel";
-        MYSQL_USER = "pelican";
-        MARIADB_AUTO_UPGRADE = "1";
-      };
-
-      environmentFiles = [ config.sops.secrets."pelican-db_env".path ];
-
-      volumes = [
-        "${cfg.dbDataPath}:/var/lib/mysql"
-      ];
-    };
 
     # Panel
     virtualisation.oci-containers.containers.pelican-panel = {
@@ -229,11 +164,8 @@ in
         APP_URL = "https://${cfg.panelDomain}";
         TZ = "Europe/Berlin";
         APP_ENV = "production";
-        DB_CONNECTION = "mariadb";
-        DB_DATABASE = "panel";
-        DB_HOST = "pelican-db";
-        DB_PORT = "3306";
-        DB_USERNAME = "pelican";
+        DB_CONNECTION = "sqlite";
+        DB_DATABASE = "/pelican-data/database/database.sqlite";
         # Behind Traefik: skip the entrypoint's Let's Encrypt email requirement
         # (the panel does not terminate TLS itself).
         BEHIND_PROXY = "true";
@@ -250,8 +182,6 @@ in
         "${cfg.panelLogsPath}:/var/www/html/storage/logs:U"
         "${caddyFile}:/etc/caddy/Caddyfile:ro"
       ];
-
-      dependsOn = [ "pelican-db" ];
 
       labels = {
         "traefik.enable" = "true";
@@ -327,16 +257,11 @@ in
       };
     };
 
-    systemd.services."podman-pelican-db".after = [ "podman-network-pelican-container-user.service" ];
-    systemd.services."podman-pelican-db".requires = [ "podman-network-pelican-container-user.service" ];
-
     systemd.services."podman-pelican-panel".after = [
       "podman-network-pelican-container-user.service"
-      "podman-pelican-db.service"
     ];
     systemd.services."podman-pelican-panel".requires = [
       "podman-network-pelican-container-user.service"
-      "podman-pelican-db.service"
     ];
 
     systemd.services."podman-pelican-wings".after = [

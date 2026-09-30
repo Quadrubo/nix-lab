@@ -566,9 +566,6 @@
 
       panelDomain = "pelican-panel.l.qudr.de";
       wingsDomain = "pelican-wings.l.qudr.de";
-
-      # Publish the panel DB on a loopback port so borgmatic can dump it.
-      dbLocalhostPort = 3311;
     };
 
     speedtest-tracker = {
