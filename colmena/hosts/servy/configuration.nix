@@ -604,6 +604,18 @@
       ];
     };
 
+    trek = {
+      enable = true;
+      sopsFile = ../../secrets/servy.yaml;
+
+      domain = "trek.l.qudr.de";
+      allowlistGroups = [
+        "julian"
+        "lara"
+        "publy"
+      ];
+    };
+
     unifi-network-application = {
       enable = true;
       sopsFile = ../../secrets/servy.yaml;
