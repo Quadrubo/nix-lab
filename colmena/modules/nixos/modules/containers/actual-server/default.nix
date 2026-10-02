@@ -17,7 +17,7 @@ let
 
         image = mkOption {
           type = types.str;
-          default = "ghcr.io/actualbudget/actual:26.9.0"; # renovate: docker
+          default = "ghcr.io/actualbudget/actual:26.10.0"; # renovate: docker
           description = "The docker image to run.";
         };
 
