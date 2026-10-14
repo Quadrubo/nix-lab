@@ -205,12 +205,14 @@ Install debian on the server and make sure it can be accessed using your ssh key
 ### 2. Create the NixOS configuration
 
 Create the NixOS configuration by copying the standard config from the `examples/hetzner` folder.
+Don't copy the `hardware-configuration.nix`, it is only meant for Hetzner Cloud VMs. Create an empty one instead, it will be generated during the bootstrap.
 
 ```shell
 cd colmena/hosts
 mkdir my-new-server
 cd my-new-server
-cp ../../examples/hetzner/* .
+cp ../../examples/hetzner/configuration.nix ../../examples/hetzner/disko-config.nix .
+echo '{ }' > hardware-configuration.nix
 ```
 
 Make sure to change the `disko-config.nix` to use the correct devices and make other changes specific to your hardware.
@@ -281,8 +283,10 @@ colmena = {
 ### 4. Bootstrap
 
 ```shell
-just bootstrap my-new-server
+just bootstrap my-new-server --generate-hardware-config nixos-generate-config ./hosts/my-new-server/hardware-configuration.nix
 ```
+
+Commit the generated `hardware-configuration.nix` afterwards.
 
 #### 5. Add it's sops key
 

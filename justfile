@@ -23,7 +23,7 @@ _merge-hosts:
 
     echo "✅ Updated {{ HOSTS_FILE }}"
 
-bootstrap host: _merge-hosts
+bootstrap host +args="": _merge-hosts
     #!/usr/bin/env bash
     set -e
     IP=$(jq -r '."{{ host }}"' {{ HOSTS_FILE }})
@@ -38,7 +38,7 @@ bootstrap host: _merge-hosts
 
     echo "🚀 Bootstrapping {{ host }} ($IP)..."
 
-    cd colmena && nix run github:nix-community/nixos-anywhere -- --flake .#{{ host }} "root@$IP"
+    cd colmena && nix run github:nix-community/nixos-anywhere -- --flake .#{{ host }} {{ args }} "root@$IP"
 
 bootstrap-all: _merge-hosts
     #!/usr/bin/env bash
