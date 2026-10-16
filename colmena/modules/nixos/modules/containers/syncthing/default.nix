@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "syncthing/syncthing:2.1.3"; # renovate: docker
+      default = "syncthing/syncthing:2.1.6"; # renovate: docker
     };
 
     domain = mkOption {
