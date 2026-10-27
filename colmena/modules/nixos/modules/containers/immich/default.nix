@@ -35,7 +35,7 @@ in
 
     redisImage = mkOption {
       type = types.str;
-      default = "docker.io/valkey/valkey:9@sha256:8e8d64b405ce18f41b8e5ee20aa4687a8ed0022d1298f2ce31cdcf3a76e09411"; # renovate: docker
+      default = "docker.io/valkey/valkey:9@sha256:3add1a336a920ea54770a001ab6feb3da5fceea96a40373a3a2cd469b815f0b7"; # renovate: docker
     };
 
     dbImage = mkOption {
