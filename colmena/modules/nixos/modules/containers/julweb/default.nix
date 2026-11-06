@@ -30,7 +30,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "mariadb:12.3.3"; # renovate: docker
+      default = "mariadb:13.0.2"; # renovate: docker
     };
 
     dbLocalhostPort = mkOption {
