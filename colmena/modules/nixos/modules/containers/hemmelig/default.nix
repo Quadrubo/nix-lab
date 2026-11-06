@@ -25,7 +25,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "hemmeligapp/hemmelig:v7.4.8"; # renovate: docker
+      default = "hemmeligapp/hemmelig:v7.6.1"; # renovate: docker
     };
 
     domain = mkOption {
