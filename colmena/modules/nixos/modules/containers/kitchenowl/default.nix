@@ -30,7 +30,7 @@ in
 
     backendImage = mkOption {
       type = types.str;
-      default = "tombursch/kitchenowl-backend:v0.7.10"; # renovate: docker
+      default = "tombursch/kitchenowl-backend:v0.8.1"; # renovate: docker
     };
 
     dbImage = mkOption {
