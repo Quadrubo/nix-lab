@@ -6,6 +6,8 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
     colmena.url = "github:zhaofengli/colmena";
     disko.url = "github:nix-community/disko";
+    # Use nixos-raspberrypi over nixos-hardware for its binary cache of the Pi kernel
+    nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
 
     sops-nix = {
       url = "github:Mic92/sops-nix";
@@ -19,6 +21,7 @@
       nixpkgs,
       colmena,
       disko,
+      nixos-raspberrypi,
       sops-nix,
       ...
     }:
@@ -52,6 +55,20 @@
               }
             )
           ];
+          musy = [
+            sops-nix.nixosModules.sops
+            nixos-raspberrypi.lib.inject-overlays
+            nixos-raspberrypi.nixosModules.trusted-nix-caches
+            nixos-raspberrypi.nixosModules.raspberry-pi-3.base
+            nixos-raspberrypi.nixosModules.sd-image
+            ./hosts/musy/configuration.nix
+            (
+              { ... }:
+              {
+                networking.hostName = "musy";
+              }
+            )
+          ];
         };
 
         serverIps = builtins.fromJSON (builtins.readFile ./hosts.json);
@@ -64,6 +81,10 @@
           servy = nixpkgs.lib.nixosSystem {
             inherit system;
             modules = hostModules.servy;
+          };
+          musy = nixpkgs.lib.nixosSystem {
+            specialArgs = { inherit nixos-raspberrypi; };
+            modules = hostModules.musy;
           };
         };
 
@@ -84,6 +105,11 @@
                 inherit system;
                 overlays = [ ];
               };
+
+              nodeNixpkgs = builtins.mapAttrs (
+                _: host: import nixpkgs { system = host.config.nixpkgs.hostPlatform.system; }
+              ) nixosConfigurations;
+              nodeSpecialArgs = builtins.mapAttrs (_: host: host._module.specialArgs) nixosConfigurations;
             };
 
             publy =
@@ -115,6 +141,17 @@
                 };
 
                 imports = hostModules.servy;
+              };
+
+            musy =
+              { ... }:
+              {
+                deployment = {
+                  targetHost = serverIps.musy;
+                  targetUser = "colmena";
+                };
+
+                imports = hostModules.musy;
               };
           };
 
