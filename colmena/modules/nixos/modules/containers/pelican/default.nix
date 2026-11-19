@@ -51,12 +51,12 @@ in
 
     panelImage = mkOption {
       type = types.str;
-      default = "ghcr.io/pelican-dev/panel:v1.0.0-beta34"; # renovate: docker
+      default = "ghcr.io/pelican/panel:v1.0.0-rc.2"; # renovate: docker
     };
 
     wingsImage = mkOption {
       type = types.str;
-      default = "ghcr.io/pelican-dev/wings:v1.0.0-beta25"; # renovate: docker
+      default = "ghcr.io/pelican/wings:v1.0.0-rc.1"; # renovate: docker
     };
 
     panelDataPath = mkOption {
