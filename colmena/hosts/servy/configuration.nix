@@ -344,6 +344,15 @@
       ];
     };
 
+    changedetection = {
+      enable = true;
+
+      domain = "changedetection.l.qudr.de";
+      allowlistGroups = [
+        "julian"
+      ];
+    };
+
     chartdb = {
       enable = true;
 
