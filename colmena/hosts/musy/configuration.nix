@@ -1,4 +1,4 @@
-{ ... }:
+{ musy-player, ... }:
 {
   imports = [
     ../../modules/nixos/default.nix
@@ -14,6 +14,15 @@
 
     # Add a placeholder room until the kitchen has its own speaker
     testClients = [ "kueche" ];
+  };
+
+  # Play inserted audio CDs into the "CD" source on servy
+  myServices.cdPlayer = {
+    enable = true;
+    # Cross compiled on x86_64, since Go builds the aarch64 binary without emulation
+    package = musy-player.packages.x86_64-linux.aarch64-linux;
+    server = "192.168.10.10";
+    allowedHosts = [ "192.168.10.12" ]; # homy
   };
 
   myServices.soloist = {

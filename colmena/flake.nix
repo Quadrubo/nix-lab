@@ -10,6 +10,11 @@
     # Use nixos-raspberrypi over nixos-hardware for its binary cache of the Pi kernel
     nixos-raspberrypi.url = "github:nvmd/nixos-raspberrypi/main";
 
+    musy-player = {
+      url = "git+ssh://git@github.com/Quadrubo/musy-player";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -24,6 +29,7 @@
       colmena,
       disko,
       nixos-raspberrypi,
+      musy-player,
       sops-nix,
       ...
     }:
@@ -87,7 +93,9 @@
             modules = hostModules.servy;
           };
           musy = nixpkgs.lib.nixosSystem {
-            specialArgs = { inherit nixos-raspberrypi nixpkgs-unstable; };
+            specialArgs = {
+              inherit nixos-raspberrypi nixpkgs-unstable musy-player;
+            };
             modules = hostModules.musy;
           };
         };
