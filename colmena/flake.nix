@@ -77,6 +77,20 @@
               }
             )
           ];
+          homy = [
+            sops-nix.nixosModules.sops
+            nixos-raspberrypi.lib.inject-overlays
+            nixos-raspberrypi.nixosModules.trusted-nix-caches
+            nixos-raspberrypi.nixosModules.raspberry-pi-4.base
+            nixos-raspberrypi.nixosModules.sd-image
+            ./hosts/homy/configuration.nix
+            (
+              { ... }:
+              {
+                networking.hostName = "homy";
+              }
+            )
+          ];
         };
 
         serverIps = builtins.fromJSON (builtins.readFile ./hosts.json);
@@ -97,6 +111,10 @@
               inherit nixos-raspberrypi nixpkgs-unstable musy-player;
             };
             modules = hostModules.musy;
+          };
+          homy = nixpkgs.lib.nixosSystem {
+            specialArgs = { inherit nixos-raspberrypi nixpkgs-unstable; };
+            modules = hostModules.homy;
           };
         };
 
@@ -164,6 +182,17 @@
                 };
 
                 imports = hostModules.musy;
+              };
+
+            homy =
+              { ... }:
+              {
+                deployment = {
+                  targetHost = serverIps.homy;
+                  targetUser = "colmena";
+                };
+
+                imports = hostModules.homy;
               };
           };
 
