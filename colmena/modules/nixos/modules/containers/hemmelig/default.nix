@@ -83,6 +83,7 @@ in
         "--network=traefik"
         "--network=hemmelig"
         "--userns=keep-id:uid=999,gid=999"
+        "--user=0:0"
         "--health-cmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/health/ready"
         "--health-interval=30s"
         "--health-timeout=10s"

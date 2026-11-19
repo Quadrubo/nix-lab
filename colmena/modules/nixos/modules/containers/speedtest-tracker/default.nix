@@ -92,6 +92,7 @@ in
         "--network=traefik"
         "--network=speedtest-tracker"
         "--userns=keep-id:uid=1000,gid=1000"
+        "--user=0:0"
       ];
 
       environment = {
