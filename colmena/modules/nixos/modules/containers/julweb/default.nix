@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/quadrubo/julweb:v1.1.5"; # renovate: docker
+      default = "ghcr.io/quadrubo/julweb:v1.1.8"; # renovate: docker
     };
 
     domain = mkOption {
@@ -145,7 +145,6 @@ in
         AUTORUN_ENABLED = "true";
         AUTORUN_LARAVEL_STORAGE_LINK = "true";
         AUTORUN_LARAVEL_MIGRATION = "true";
-        AUTORUN_LARAVEL_SEEDING = "true";
 
         APP_NAME = "JulWeb";
         APP_ENV = "production";
