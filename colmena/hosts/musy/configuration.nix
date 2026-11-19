@@ -6,6 +6,16 @@
 
   nixpkgs.hostPlatform = "aarch64-linux";
 
+  myServices.snapclient = {
+    enable = true;
+    server = "192.168.10.10";
+    # 3.5mm jack
+    soundcard = "sysdefault:CARD=Headphones";
+
+    # Add a placeholder room until the kitchen has its own speaker
+    testClients = [ "kueche" ];
+  };
+
   # Disable ZFS, which the sd-image module enables for installer images
   # because its kernel module for the Pi kernel isn't in any cache
   boot.supportedFilesystems.zfs = false;
