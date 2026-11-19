@@ -13,6 +13,8 @@ let
   containerUserGid = 100;
   paperlessUsermapUid = 0;
   paperlessUsermapGid = 0;
+  # Keep the preset GPG passphrase in gpg-agent for 10 years, so it basically never expires
+  gpgCacheTTL = 315360000;
 
   instanceOptions =
     { name, ... }:
@@ -402,15 +404,14 @@ let
             "podman-${prefix}-db.service"
             "podman-${prefix}-redis.service"
           ]
-          ++ optionals instanceCfg.gpg.enable [
-            "paperless-ngx-${name}-gpg-setup.service"
-            "paperless-ngx-${name}-gpg-cache.service"
-          ];
+          ++ optionals instanceCfg.gpg.enable [ "paperless-ngx-${name}-gpg-setup.service" ];
+          wants = optionals instanceCfg.gpg.enable [ "paperless-ngx-${name}-gpg-cache.service" ];
         };
       };
       gpgSetup = optionalAttrs instanceCfg.gpg.enable {
         "paperless-ngx-${name}-gpg-setup" = {
           description = "Paperless-ngx GPG setup for ${name}";
+          wants = [ "paperless-ngx-${name}-gpg-cache.service" ];
           after = [
             "linger-users.service"
             "user@1000.service"
@@ -447,6 +448,12 @@ let
                           cat > "$GNUPGHOME/gpg-agent.conf" <<'EOF'
               ${instanceCfg.gpg.gpgAgentConfText}
               EOF
+                          # Allow the cache service to preset the passphrase and keep it for
+                          # gpgCacheTTL. Preset entries otherwise expire after max-cache-ttl
+                          printf '%s\n' \
+                            "allow-preset-passphrase" \
+                            "default-cache-ttl ${toString gpgCacheTTL}" \
+                            "max-cache-ttl ${toString gpgCacheTTL}" >> "$GNUPGHOME/gpg-agent.conf"
 
                           gpgconf --homedir "$GNUPGHOME" --kill gpg-agent || true
                           gpgconf --homedir "$GNUPGHOME" --launch gpg-agent
@@ -481,28 +488,41 @@ let
             Type = "oneshot";
             User = "container-user";
             Group = "users";
-            RemainAfterExit = true;
           };
           path = [
             pkgs.gnupg
             pkgs.coreutils
+            pkgs.gawk
           ];
           script =
             let
-              mailFile = config.sops.secrets."${prefix}-gpg_mail".path;
+              fingerprintFile = config.sops.secrets."${prefix}-gpg_fingerprint".path;
               passphraseFile = config.sops.secrets."${prefix}-gpg_passphrase".path;
               gpgHome = instanceCfg.gpg.homePath;
             in
             ''
               set -euo pipefail
               export GNUPGHOME="${gpgHome}"
-              gpgconf --homedir "$GNUPGHOME" --kill gpg-agent || true
-              gpgconf --homedir "$GNUPGHOME" --launch gpg-agent
-              gpg-connect-agent --homedir "$GNUPGHOME" /bye
-              mail=$(cat "${mailFile}")
-              echo "cache warmup" | gpg --batch --no-tty --pinentry-mode loopback \
-                --passphrase-file "${passphraseFile}" --local-user "$mail" --sign \
-                --output /dev/null
+
+              if ! gpg-connect-agent --no-autostart "getinfo pid" /bye 2>/dev/null | grep -q "^D "; then
+                echo "gpg-agent is not running, restart paperless-ngx-${name}-gpg-setup" >&2
+                exit 1
+              fi
+
+              fingerprint=$(cat "${fingerprintFile}")
+              keygrips=$(gpg --batch --no-autostart --with-colons --with-keygrip \
+                --list-secret-keys "$fingerprint" | awk -F: '$1 == "grp" { print $10 }')
+              for keygrip in $keygrips; do
+                ${pkgs.gnupg}/libexec/gpg-preset-passphrase --preset "$keygrip" < "${passphraseFile}"
+              done
+
+              # Check that decrypting works without a passphrase, so a broken preset
+              # fails here and not later in paperless
+              echo "decryption check" \
+                | gpg --batch --no-tty --no-autostart --trust-model always \
+                  --recipient "$fingerprint" --encrypt \
+                | gpg --batch --no-tty --no-autostart --pinentry-mode error \
+                  --decrypt --output /dev/null
             '';
           wantedBy = [ "multi-user.target" ];
         };
@@ -542,7 +562,7 @@ let
         wantedBy = [ "timers.target" ];
         timerConfig = {
           OnBootSec = "2m";
-          OnUnitActiveSec = "30m";
+          OnUnitActiveSec = "15m";
           Unit = "${timerName}.service";
         };
       };
