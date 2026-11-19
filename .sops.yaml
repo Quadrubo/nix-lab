@@ -6,6 +6,7 @@ keys:
   # Servers
   - &publy age1dnkzhchnf3zj48msg08hqxmcf0az3csffcg4jjm9s8r7x2c303ysr0tfzg
   - &servy age1xuznpy9dc84gx53slfvguh7ajsqwqvdamptt2yjqn5h3t4ej5qyq5z0atf
+  - &musy age1jzpvsgwall0uvmsm43e36nkmlckxwfwzhgdxlz06uwedxtl6ap5s3aqhg2
 creation_rules:
   # --- Groups ---
   # Home secrets
@@ -33,3 +34,11 @@ creation_rules:
         - *framy
         - *work
         - *servy
+  # Musy secrets
+  - path_regex: secrets/musy\.yaml$
+    key_groups:
+      - age:
+        - *compy
+        - *framy
+        - *work
+        - *musy

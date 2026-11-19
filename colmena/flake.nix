@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-26.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-parts.url = "github:hercules-ci/flake-parts";
     colmena.url = "github:zhaofengli/colmena";
     disko.url = "github:nix-community/disko";
@@ -19,6 +20,7 @@
     inputs@{
       flake-parts,
       nixpkgs,
+      nixpkgs-unstable,
       colmena,
       disko,
       nixos-raspberrypi,
@@ -76,14 +78,16 @@
         nixosConfigurations = {
           publy = nixpkgs.lib.nixosSystem {
             inherit system;
+            specialArgs = { inherit nixpkgs-unstable; };
             modules = hostModules.publy;
           };
           servy = nixpkgs.lib.nixosSystem {
             inherit system;
+            specialArgs = { inherit nixpkgs-unstable; };
             modules = hostModules.servy;
           };
           musy = nixpkgs.lib.nixosSystem {
-            specialArgs = { inherit nixos-raspberrypi; };
+            specialArgs = { inherit nixos-raspberrypi nixpkgs-unstable; };
             modules = hostModules.musy;
           };
         };

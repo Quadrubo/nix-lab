@@ -16,9 +16,31 @@
     testClients = [ "kueche" ];
   };
 
+  myServices.soloist = {
+    enable = true;
+    name = "Zuhause";
+    sopsFile = ../../secrets/musy.yaml;
+    server = "192.168.10.10";
+
+    # Playback state and control for Home Assistant
+    websocket = {
+      port = 4955;
+      allowedHosts = [ "192.168.10.12" ]; # homy
+    };
+
+    discovery.allowedHosts = [ "192.168.10.1" ]; # OPNsense mDNS repeater
+
+    login.allowedHosts = [
+      "192.168.20.0/24" # USER
+      "192.168.40.0/24" # GUEST
+    ];
+  };
+
   # Disable ZFS, which the sd-image module enables for installer images
   # because its kernel module for the Pi kernel isn't in any cache
   boot.supportedFilesystems.zfs = false;
+
+  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
   # Compress swap in RAM because the Pi 3 has only 1 GB
   zramSwap.enable = true;
