@@ -10,3 +10,7 @@ backend.conf
 
 # sops (decrypted working copies, e.g. from the VS Code extension)
 .decrypted~*
+
+# Nix build outputs
+result
+result-*
