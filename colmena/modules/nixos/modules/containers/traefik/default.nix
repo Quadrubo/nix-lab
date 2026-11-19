@@ -106,13 +106,13 @@ let
   dynamicConfig = pkgs.writeText "dynamic.yml" (
     builtins.toJSON (
       let
-        httpCfg = {
-          http = {
-            serversTransports = if cfg.serversTransports != { } then cfg.serversTransports else null;
-          };
-        };
+        http =
+          lib.optionalAttrs (cfg.serversTransports != { }) {
+            inherit (cfg) serversTransports;
+          }
+          // lib.filterAttrs (_: v: v != { }) cfg.dynamicHttp;
       in
-      lib.optionalAttrs (httpCfg.http.serversTransports != null) httpCfg
+      lib.optionalAttrs (http != { }) { inherit http; }
     )
   );
 in
@@ -155,6 +155,26 @@ in
         type = types.attrs;
         default = { };
         description = "Additional Traefik serversTransports configuration.";
+      };
+
+      dynamicHttp = {
+        routers = mkOption {
+          type = types.attrsOf types.anything;
+          default = { };
+          description = "HTTP routers for the file provider, for services Traefik can't discover through Docker labels (e.g. services on the host).";
+        };
+
+        services = mkOption {
+          type = types.attrsOf types.anything;
+          default = { };
+          description = "HTTP services for the file provider.";
+        };
+
+        middlewares = mkOption {
+          type = types.attrsOf types.anything;
+          default = { };
+          description = "HTTP middlewares for the file provider, referenced as <name>@file.";
+        };
       };
 
       allowlistGroups = mkOption {

@@ -148,6 +148,41 @@
     ];
   };
 
+  # Multiroom audio from musy
+  myServices.snapcast = {
+    enable = true;
+    buffer = 500;
+
+    tcpSources = [
+      {
+        name = "Spotify";
+        port = 4954;
+        allowedHosts = [ "192.168.10.14" ]; # musy
+      }
+      {
+        name = "CD";
+        port = 4953;
+        allowedHosts = [ "192.168.10.14" ]; # musy
+      }
+    ];
+
+    metaStreams.Automatisch = [
+      "CD"
+      "Spotify"
+    ];
+
+    defaultStream = "Automatisch";
+
+    streaming.allowedHosts = [ "192.168.10.14" ]; # musy
+    control.allowedHosts = [ "192.168.10.12" ]; # homy
+
+    domain = "snapcast.l.qudr.de";
+    allowlistGroups = [
+      "julian"
+      "publy"
+    ];
+  };
+
   # Containers
   myServices = {
     podman = {
