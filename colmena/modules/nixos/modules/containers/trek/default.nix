@@ -8,12 +8,6 @@ with lib;
 
 let
   cfg = config.myServices.trek;
-
-  # The entrypoint chowns the data dirs to the in-container `node` user (uid 1000)
-  # before dropping privileges. Rootless podman maps that to a host subuid.
-  nodeContainerUid = 1000;
-  subUidBase = (builtins.head config.users.users.container-user.subUidRanges).startUid;
-  nodeHostUid = subUidBase + nodeContainerUid - 1;
 in
 {
   options.myServices.trek = {
@@ -95,8 +89,8 @@ in
     # Directories
     systemd.tmpfiles.rules = [
       "d /mnt/storage/containers/trek 0755 container-user users -"
-      "d ${cfg.dataPath} 0755 ${toString nodeHostUid} ${toString nodeHostUid} -"
-      "d ${cfg.uploadsPath} 0755 ${toString nodeHostUid} ${toString nodeHostUid} -"
+      "d ${cfg.dataPath} 0755 container-user users -"
+      "d ${cfg.uploadsPath} 0755 container-user users -"
     ];
 
     # App
@@ -112,6 +106,7 @@ in
       extraOptions = [
         "--network=traefik"
         "--network=trek"
+        "--userns=keep-id:uid=1000,gid=1000"
         # Hardening as in the upstream docker-compose.yml
         "--read-only"
         "--tmpfs=/tmp:rw,noexec,nosuid,size=128m"

@@ -8,11 +8,6 @@ with lib;
 
 let
   cfg = config.myServices.hemmelig;
-
-  # Host subuid that the in-container `app` user (uid 999) maps to.
-  appContainerUid = 999;
-  subUidBase = (builtins.head config.users.users.container-user.subUidRanges).startUid;
-  appHostUid = subUidBase + appContainerUid - 1;
 in
 {
   options.myServices.hemmelig = {
@@ -69,8 +64,8 @@ in
 
     # Directories
     systemd.tmpfiles.rules = [
-      "d /mnt/storage/containers/hemmelig/database 0755 ${toString appHostUid} ${toString appHostUid} -"
-      "d /mnt/storage/containers/hemmelig/uploads 0755 ${toString appHostUid} ${toString appHostUid} -"
+      "d /mnt/storage/containers/hemmelig/database 0755 container-user users -"
+      "d /mnt/storage/containers/hemmelig/uploads 0755 container-user users -"
     ];
 
     # App
@@ -87,6 +82,7 @@ in
         "--init"
         "--network=traefik"
         "--network=hemmelig"
+        "--userns=keep-id:uid=999,gid=999"
         "--health-cmd=wget --no-verbose --tries=1 --spider http://localhost:3000/api/health/ready"
         "--health-interval=30s"
         "--health-timeout=10s"

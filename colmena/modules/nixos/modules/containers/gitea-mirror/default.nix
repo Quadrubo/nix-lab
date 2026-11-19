@@ -8,11 +8,6 @@ with lib;
 
 let
   cfg = config.myServices.gitea-mirror;
-
-  # Host subuid that the in-container `gitea-mirror` user (uid 1001) maps to.
-  appContainerUid = 1001;
-  subUidBase = (builtins.head config.users.users.container-user.subUidRanges).startUid;
-  appHostUid = subUidBase + appContainerUid - 1;
 in
 {
   options.myServices.gitea-mirror = {
@@ -79,11 +74,10 @@ in
       ];
     };
 
-    # Directories. The data dir is owned by appHostUid because the image runs as
-    # a non-root user (uid 1001) with no root entrypoint to fix permissions.
+    # Directories
     systemd.tmpfiles.rules = [
       "d /mnt/storage/containers/gitea-mirror 0755 container-user users -"
-      "d /mnt/storage/containers/gitea-mirror/data 0755 ${toString appHostUid} ${toString appHostUid} -"
+      "d /mnt/storage/containers/gitea-mirror/data 0755 container-user users -"
     ];
 
     virtualisation.oci-containers.containers.gitea-mirror = {
@@ -95,6 +89,7 @@ in
       extraOptions = [
         "--network=traefik"
         "--network=gitea-mirror"
+        "--userns=keep-id:uid=1001,gid=1001"
       ];
 
       environment = {

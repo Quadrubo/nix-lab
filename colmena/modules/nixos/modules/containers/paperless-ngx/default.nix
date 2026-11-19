@@ -179,6 +179,7 @@ let
 
         extraOptions = [
           "--network=${prefix}"
+          "--userns=keep-id:uid=999,gid=999"
         ];
 
         volumes = [

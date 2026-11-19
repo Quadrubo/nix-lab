@@ -157,6 +157,7 @@ in
         # Pin it to the host gateway: panel -> haproxy -> Traefik -> wings.
         # The node's "Connect" port must be 443 (not Wings' 8080 default) to match.
         "--add-host=${cfg.wingsDomain}:host-gateway"
+        "--userns=keep-id:uid=82,gid=82"
       ];
 
       environment = {
@@ -173,13 +174,9 @@ in
 
       environmentFiles = [ config.sops.secrets."pelican-panel_env".path ];
 
-      # The panel image runs entirely as www-data (uid 82), which under rootless
-      # Podman maps to a subuid that can't write the bind mounts. ":U" makes
-      # Podman chown the mount sources to the mapped uid on start. ZFS can't do
-      # idmapped mounts, so keep-id would force a full layer copy - ":U" avoids that.
       volumes = [
-        "${cfg.panelDataPath}:/pelican-data:U"
-        "${cfg.panelLogsPath}:/var/www/html/storage/logs:U"
+        "${cfg.panelDataPath}:/pelican-data"
+        "${cfg.panelLogsPath}:/var/www/html/storage/logs"
         "${caddyFile}:/etc/caddy/Caddyfile:ro"
       ];
 

@@ -91,6 +91,7 @@ in
       extraOptions = [
         "--network=traefik"
         "--network=speedtest-tracker"
+        "--userns=keep-id:uid=1000,gid=1000"
       ];
 
       environment = {
@@ -104,10 +105,7 @@ in
       environmentFiles = [ config.sops.secrets."speedtest-tracker_env".path ];
 
       volumes = [
-        # :U so podman chowns the mount to the container's PUID. SQLite needs to
-        # create its journal alongside the database, which requires write access
-        # on the directory itself, not just the file.
-        "${cfg.configPath}:/config:U"
+        "${cfg.configPath}:/config"
       ];
 
       labels =
