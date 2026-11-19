@@ -6,9 +6,36 @@
 
   nixpkgs.hostPlatform = "aarch64-linux";
 
+  myServices = {
+    traefik = {
+      enable = true;
+
+      dnsChallenge = {
+        enable = true;
+
+        sopsFile = ../../secrets/home.yaml;
+      };
+    };
+
+    homeassistant = {
+      enable = true;
+
+      domain = "homeassistant.l.qudr.de";
+      # TODO: introduce gatus check
+      # Currently skipped since publy only reaches homy through servy's NAT
+      monitoring = false;
+      allowlistGroups = [
+        "julian"
+        "lara"
+      ];
+    };
+  };
+
   # Disable ZFS, which the sd-image module enables for installer images
   # because its kernel module for the Pi kernel isn't in any cache
   boot.supportedFilesystems.zfs = false;
+
+  sops.age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
 
   zramSwap.enable = true;
 

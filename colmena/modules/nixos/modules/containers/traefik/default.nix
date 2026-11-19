@@ -179,7 +179,7 @@ in
 
       allowlistGroups = mkOption {
         type = types.attrsOf (types.listOf types.str);
-        default = { };
+        default = import ./allowlist-groups.nix;
         description = ''
           Named IP groups (per user/device) used to build per-service allowlists.
           Each key is an atomic group name (e.g. "julian", "lara", "chromecasts").

@@ -7,6 +7,7 @@ keys:
   - &publy age1dnkzhchnf3zj48msg08hqxmcf0az3csffcg4jjm9s8r7x2c303ysr0tfzg
   - &servy age1xuznpy9dc84gx53slfvguh7ajsqwqvdamptt2yjqn5h3t4ej5qyq5z0atf
   - &musy age1jzpvsgwall0uvmsm43e36nkmlckxwfwzhgdxlz06uwedxtl6ap5s3aqhg2
+  - &homy age1dq2sv3ywxp3nsv9swxydh7l7r8k3ddg5grhdagrqhe7tv2jxzyts3u5x9v
 creation_rules:
   # --- Groups ---
   # Home secrets
@@ -17,6 +18,7 @@ creation_rules:
         - *framy
         - *work
         - *servy
+        - *homy
   # --- Servers ---
   # Publy secrets
   - path_regex: secrets/publy\.yaml$
