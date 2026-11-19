@@ -21,7 +21,7 @@ in
 
     device = mkOption {
       type = types.str;
-      default = "/dev/sr0";
+      default = "/dev/cdrom";
       description = "CD drive to play from.";
     };
 
@@ -79,6 +79,12 @@ in
     # Read the drive
     users.users.${config.services.mpd.user}.extraGroups = [ "cdrom" ];
 
+    # Name every CD drive /dev/cdrom, since the kernel numbers them srN in plug order
+    # and systemd only links sr0
+    services.udev.extraRules = ''
+      SUBSYSTEM=="block", KERNEL=="sr[0-9]*", SYMLINK+="cdrom"
+    '';
+
     myModules.firewall.allowedTCPPortsFrom = [
       {
         inherit (cfg) port;
@@ -107,7 +113,8 @@ in
         DynamicUser = true;
         SupplementaryGroups = [ "cdrom" ];
         DevicePolicy = "closed";
-        DeviceAllow = [ "${cfg.device} r" ];
+        # Allow every CD drive, since the drive can appear after the service started
+        DeviceAllow = [ "block-sr r" ];
         # Netlink receives the udev events about the drive
         RestrictAddressFamilies = [
           "AF_INET"
