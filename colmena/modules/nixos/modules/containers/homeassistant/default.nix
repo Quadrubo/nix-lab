@@ -13,13 +13,23 @@ let
   allowlistIps = concatMap (g: config.myServices.traefik.allowlistGroups.${g}) cfg.allowlistGroups;
 
   # Write the initial config once, since HA owns the file afterwards
-  initialConfig = pkgs.writeText "configuration.yaml" ''
-    default_config:
+  initialConfig = pkgs.writeText "configuration.yaml" (
+    ''
+      default_config:
 
-    automation: !include automations.yaml
-    script: !include scripts.yaml
-    scene: !include scenes.yaml
-  '';
+      automation: !include automations.yaml
+      script: !include scripts.yaml
+      scene: !include scenes.yaml
+    ''
+    # Keep media_position's slider out of the recorder, since it updates every second while playing
+    + optionalString (cfg.customComponents ? media_position) ''
+
+      recorder:
+        exclude:
+          entity_globs:
+            - number.*_position
+    ''
+  );
 in
 {
   options.myServices.homeassistant = {

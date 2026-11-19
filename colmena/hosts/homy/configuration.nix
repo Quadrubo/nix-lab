@@ -1,4 +1,4 @@
-{ ... }:
+{ lib, ha-integrations, ... }:
 {
   imports = [
     ../../modules/nixos/default.nix
@@ -21,6 +21,11 @@
       enable = true;
 
       domain = "homeassistant.l.qudr.de";
+      customComponents = lib.genAttrs [
+        "soloist"
+        "cd_player"
+        "media_position"
+      ] (name: "${ha-integrations}/custom_components/${name}");
       # TODO: introduce gatus check
       # Currently skipped since publy only reaches homy through servy's NAT
       monitoring = false;

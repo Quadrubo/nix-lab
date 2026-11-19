@@ -15,6 +15,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    ha-integrations = {
+      url = "git+ssh://git@github.com/Quadrubo/ha-integrations";
+      flake = false;
+    };
+
     sops-nix = {
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -30,6 +35,7 @@
       disko,
       nixos-raspberrypi,
       musy-player,
+      ha-integrations,
       sops-nix,
       ...
     }:
@@ -113,7 +119,9 @@
             modules = hostModules.musy;
           };
           homy = nixpkgs.lib.nixosSystem {
-            specialArgs = { inherit nixos-raspberrypi nixpkgs-unstable; };
+            specialArgs = {
+              inherit nixos-raspberrypi nixpkgs-unstable ha-integrations;
+            };
             modules = hostModules.homy;
           };
         };

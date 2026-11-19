@@ -120,6 +120,22 @@
         "type": "github"
       }
     },
+    "ha-integrations": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1795121845,
+        "narHash": "sha256-wehE5uCcV/whadfEmGDnV71QTfRt82tpNV18aepaWfo=",
+        "ref": "refs/heads/main",
+        "rev": "ea0518942ff62f41827367295dd966f41ea830c8",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@github.com/Quadrubo/ha-integrations"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@github.com/Quadrubo/ha-integrations"
+      }
+    },
     "musy-player": {
       "inputs": {
         "nixpkgs": [
@@ -309,6 +325,7 @@
         "colmena": "colmena",
         "disko": "disko",
         "flake-parts": "flake-parts",
+        "ha-integrations": "ha-integrations",
         "musy-player": "musy-player",
         "nixos-raspberrypi": "nixos-raspberrypi",
         "nixpkgs": "nixpkgs_4",
