@@ -37,7 +37,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/home-assistant/home-assistant:2026.11.0"; # renovate: docker
+      default = "ghcr.io/home-assistant/home-assistant:2026.11.2"; # renovate: docker
     };
 
     domain = mkOption {
