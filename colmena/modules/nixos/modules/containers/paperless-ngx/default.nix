@@ -44,7 +44,7 @@ let
 
         redisImage = mkOption {
           type = types.str;
-          default = "redis:8.10.1"; # renovate: docker
+          default = "redis:8.12.0"; # renovate: docker
         };
 
         scanImage = mkOption {
