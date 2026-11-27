@@ -12,6 +12,8 @@ let
 
   staticConfig = pkgs.writeText "static.yml" (
     builtins.toJSON {
+      global.aliasHeadersStrategy = "delete";
+
       entryPoints = {
         web = {
           address = ":80";
