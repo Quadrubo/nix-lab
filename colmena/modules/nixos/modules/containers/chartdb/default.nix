@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/chartdb/chartdb:1.20.1"; # renovate: docker
+      default = "ghcr.io/chartdb/chartdb:1.21.0"; # renovate: docker
     };
 
     domain = mkOption {
