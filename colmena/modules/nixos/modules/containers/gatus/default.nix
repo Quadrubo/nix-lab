@@ -81,7 +81,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/twin/gatus:v5.36.0"; # renovate: docker
+      default = "ghcr.io/twin/gatus:v5.38.0"; # renovate: docker
     };
 
     domain = mkOption {
