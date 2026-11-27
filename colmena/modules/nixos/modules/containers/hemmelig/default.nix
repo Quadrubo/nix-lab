@@ -98,6 +98,8 @@ in
         NODE_ENV = "production";
         HEMMELIG_ALLOW_REGISTRATION = "false";
         HEMMELIG_ANALYTICS_ENABLED = "false";
+        # Trust forwarded client IPs from Podman's network range, else rate limits see only Traefik
+        HEMMELIG_TRUSTED_PROXIES = "10.89.0.0/16";
       };
 
       environmentFiles = [ config.sops.secrets."hemmelig_env".path ];
