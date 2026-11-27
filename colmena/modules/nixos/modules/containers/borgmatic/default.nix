@@ -38,7 +38,7 @@ let
   ) backups.postgresqlDatabases;
 
   crontabFile = pkgs.writeText "crontab.txt" ''
-    ${cfg.cronSchedule} PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic --stats -v 0 2>&1
+    ${cfg.cronSchedule} PATH=$PATH:/usr/local/bin /usr/local/bin/borgmatic-start --stats -v 0 2>&1
   '';
 
   configFile = pkgs.writeText "config.yaml" (
@@ -70,9 +70,23 @@ let
       ];
       check_last = 3;
 
-      before_backup = [ "echo 'Starting a backup job.'" ];
-      after_backup = [ "echo 'Backup created.'" ];
-      on_error = [ "echo 'Error while creating a backup.'" ];
+      commands = [
+        {
+          before = "action";
+          when = [ "create" ];
+          run = [ "echo 'Starting a backup job.'" ];
+        }
+        {
+          after = "action";
+          when = [ "create" ];
+          states = [ "finish" ];
+          run = [ "echo 'Backup created.'" ];
+        }
+        {
+          after = "error";
+          run = [ "echo 'Error while creating a backup.'" ];
+        }
+      ];
 
       ntfy = {
         topic = "borgmatic";
@@ -268,7 +282,7 @@ in
           "/boot:/boot:ro"
           "/mnt/storage/borg-repository:/mnt/borg-repository"
           "/mnt/storage/containers/borgmatic/config:/etc/borgmatic.d"
-          "/mnt/storage/containers/borgmatic/state:/root/.borgmatic"
+          "/mnt/storage/containers/borgmatic/state:/root/.local/state/borgmatic"
           "/mnt/storage/containers/borgmatic/keys:/root/.config/borg"
           "/mnt/storage/containers/borgmatic/ssh-keys:/root/.ssh"
           "/mnt/storage/containers/borgmatic/cache:/root/.cache/borg"
