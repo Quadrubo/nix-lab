@@ -35,7 +35,7 @@ in
 
     dbImage = mkOption {
       type = types.str;
-      default = "postgres:18.7"; # renovate: docker
+      default = "postgres:19.0"; # renovate: docker
     };
 
     backendDataPath = mkOption {

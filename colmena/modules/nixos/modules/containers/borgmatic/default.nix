@@ -124,7 +124,7 @@ in
 
     postgresqlDumpImage = mkOption {
       type = types.str;
-      default = "postgres:18-alpine"; # renovate: docker
+      default = "postgres:19-alpine"; # renovate: docker
       description = ''
         Image used to run pg_dump/pg_restore/psql in a throwaway container for
         PostgreSQL servers newer than the client bundled in the borgmatic image.
