@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "mauriceboe/trek:4.3.4"; # renovate: docker
+      default = "mauriceboe/trek:5.2.1"; # renovate: docker
     };
 
     domain = mkOption {
