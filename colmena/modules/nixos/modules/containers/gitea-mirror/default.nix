@@ -20,7 +20,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "ghcr.io/raylabshq/gitea-mirror:v3.33.0"; # renovate: docker
+      default = "ghcr.io/raylabshq/gitea-mirror:v3.59.0"; # renovate: docker
     };
 
     domain = mkOption {
