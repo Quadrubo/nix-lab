@@ -150,6 +150,7 @@ in
 
       extraOptions = [
         "--network=kitchenowl"
+        "--userns=keep-id:uid=1000,gid=1000"
       ];
 
       environment = {
@@ -179,6 +180,8 @@ in
       extraOptions = [
         "--network=traefik"
         "--network=kitchenowl"
+        # Allow binding port 80, nginx in the image runs as an unprivileged user
+        "--sysctl=net.ipv4.ip_unprivileged_port_start=0"
       ];
 
       environment = {
