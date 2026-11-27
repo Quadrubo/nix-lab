@@ -15,7 +15,7 @@ in
 
     image = mkOption {
       type = types.str;
-      default = "dgtlmoon/changedetection.io:0.60.10"; # renovate: docker
+      default = "dgtlmoon/changedetection.io:0.70.4"; # renovate: docker
     };
 
     browserImage = mkOption {
