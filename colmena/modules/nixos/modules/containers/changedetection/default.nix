@@ -20,7 +20,7 @@ in
 
     browserImage = mkOption {
       type = types.str;
-      default = "dgtlmoon/sockpuppetbrowser:0.0.3"; # renovate: docker
+      default = "dgtlmoon/sockpuppetbrowser:0.0.5"; # renovate: docker
     };
 
     domain = mkOption {
